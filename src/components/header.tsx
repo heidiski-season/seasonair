@@ -9,11 +9,9 @@ import Button from "./button";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/services", label: "Find a season" },
   { href: "/about", label: "About" },
   { href: "/how-to-apply", label: "How to Apply" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
+  { href: "/faq", label: "Answered Questions" },
 ];
 
 export default function Header() {
@@ -30,10 +28,10 @@ export default function Header() {
 
   return (
     <>
-      <div className="w-full bg-glacier py-2.5 text-center text-sm font-semibold text-white">
-        Applications for Winter Season 2026/27 are now live! &nbsp;
+      <div className="w-full bg-red-600 py-2.5 text-center text-sm font-semibold text-white">
+        🚧 This site is still under construction, some features may not work yet. Thanks for your patience! &nbsp;
         <a href="/signup" className="underline underline-offset-2 hover:opacity-80">
-          Apply now
+          
         </a>
       </div>
       <header className="sticky top-0 z-50 border-b border-line/70 bg-snow/85 backdrop-blur-md">

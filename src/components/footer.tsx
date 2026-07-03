@@ -8,16 +8,14 @@ const columns = [
     title: "Find a Season",
     links: [
       { href: "/services", label: "Job Roles" },
-      { href: "/how-to-apply", label: "Costs & Inclusions" },
-      { href: "/faq", label: "Eligibility" },
-      { href: "/faq", label: "Visa Info" },
+      { href: "/costs-and-inclusions", label: "Costs & Inclusions" },
     ],
   },
   {
     title: "About",
     links: [
       { href: "/about", label: "Our Story" },
-      { href: "/contact", label: "Contact Us" },
+      { href: "/how-to-apply", label: "Interested? Apply Now"}
     ],
   },
   {

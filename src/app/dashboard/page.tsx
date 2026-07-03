@@ -461,3 +461,11 @@ const completedSections = sections.filter(s => {
                   </>
                 )}
               </div>
+            </div>
+          )}
+
+        </main>
+      </div>
+    </div>
+  );
+}
