@@ -8,34 +8,33 @@ const steps = [
   {
     n: "01",
     title: "Fill in your application",
-    body: "Complete your profile — basic info, availability, experience and role preferences. It takes about 10 minutes and you can save and come back to it at any time.",
+    body: "Complete your profile; It takes about 10 minutes and you can save and come back to it at any time before submitting.",
   },
   {
     n: "02",
-    title: "Interview with SeasonAir",
+    title: "Chit chat with YourSkiSeason expert",
     body: "Once we've reviewed your application, we'll invite you for a short informal chat with our team. This helps us understand what you're looking for and match you to the right role.",
   },
   {
     n: "03",
     title: "Get matched to a chalet company",
-    body: "We hand-pick a chalet company or resort that fits your skills, dates and preferences. You'll then have a second interview directly with them.",
+    body: "We hand-pick a chalet company or resort that fits your skills, dates and preferences. You'll then have a second interview directly with them and take part in their interview process",
   },
   {
     n: "04",
     title: "Sign your contract",
-    body: "We check the contract terms before you sign anything — pay, hours, accommodation and notice periods. No nasty surprises.",
+    body: "We check the contract terms before you sign anything; No nasty surprises and help you with all the legal requirments at no extra costs to you",
   },
   {
     n: "05",
-    title: "Jet off into the community",
-    body: "Before you even land, you'll be added to your resort's SeasonAir WhatsApp group — flatmates, ski meets, pub nights, all in one place.",
+    title: "Jet off into the season community",
+    body: "Before you even land, you'll be added to your resort's YourSkiSeason WhatsApp group so a ready made chat is all in one place.",
   },
 ];
 
 const requirements = [
   "Aged 18 or over",
-  "Right to work in the EU or Switzerland",
-  "Available for a minimum of 8 weeks",
+  "Right to work in the EU useful but not required",
   "Enthusiastic and hardworking attitude",
   "No prior ski experience required",
 ];

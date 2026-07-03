@@ -29,7 +29,7 @@ export default function Header() {
   return (
     <>
       <div className="w-full bg-red-600 py-2.5 text-center text-sm font-semibold text-white">
-        🚧 This site is still under construction, some features may not work yet. Thanks for your patience! &nbsp;
+        🚧 This site is still under construction, 1st August the site will be live! &nbsp;
         <a href="/signup" className="underline underline-offset-2 hover:opacity-80">
           
         </a>

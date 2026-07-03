@@ -6,12 +6,12 @@ const steps = [
   {
     n: "01",
     title: "Apply",
-    body: "All it takes is one click to get started; the first step to the best winter of your life.",
+    body: "All it takes is one click to get started. The first step to the best winter of your life.",
   },
   {
     n: "02",
     title: "Get matched",
-    body: "Have an interview with our team to support you through the interview the process of getting matched to the right company.",
+    body: "Have an interview with our team to support you through the the process of getting matched to the right company.",
   },
   {
     n: "03",
@@ -21,7 +21,7 @@ const steps = [
   {
     n: "04",
     title: "Jet off into the community",
-    body: "Get connected to your resort's SeasonAir WhatsApp chat before you land; pub meets, ski meets, all in one place.",
+    body: "Get connected to your resort's SeasonAir WhatsApp chat before you land, pub meets, ski meets, ski community all in one place.",
   },
 ];
 
