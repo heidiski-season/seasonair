@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  /* Core palette — alpine / social, not the usual cream-serif or black-neon defaults */
+  --night-piste: #11203a;     /* deep navy — primary dark */
+  --night-piste-light: #1b2f54;
+  --snowdrift: #f7f8fb;       /* cool off-white background */
+  --snowdrift-dim: #eef0f6;
+  --alpenglow: #2563eb;       /* warm coral-orange — primary CTA / student side */
+  --alpenglow-dark: #1d4ed8;
+  --glacier: #3fa9e0;         /* ice blue — secondary / partner side */
+  --glacier-dark: #2c8bbd;
+  --stone: #5b6472;           /* body text */
+  --stone-light: #8d95a3;
+  --line: #dde1ea;
+
+  --font-body: var(--font-inter);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-plex-mono);
+}
+
+@theme inline {
+  --color-night: var(--night-piste);
+  --color-night-light: var(--night-piste-light);
+  --color-snow: var(--snowdrift);
+  --color-snow-dim: var(--snowdrift-dim);
+  --color-alpenglow: var(--alpenglow);
+  --color-alpenglow-dark: var(--alpenglow-dark);
+  --color-glacier: var(--glacier);
+  --color-glacier-dark: var(--glacier-dark);
+  --color-stone: var(--stone);
+  --color-stone-light: var(--stone-light);
+  --color-line: var(--line);
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-inter);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--snowdrift);
+  color: var(--night-piste);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Visible focus ring for accessibility, kept consistent across all interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--alpenglow);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.balance {
+  text-wrap: balance;
+}
+
+.ridge-divider {
+  display: block;
+  width: 100%;
+  height: 28px;
+  color: var(--line);
+}
