@@ -60,9 +60,6 @@ export default function FounderQuote() {
                 <p className="text-sm text-white/50">Co-founder, SeasonAir</p>
               </footer>
             </blockquote>
-            <Button href="/about" variant="glacier" size="lg" className="mt-8">
-              Read our story
-            </Button>
           </FadeIn>
 
         </FadeIn>
