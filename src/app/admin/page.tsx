@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Mountain, CheckCircle, XCircle, LogOut } from "lucide-react";
 import Link from "next/link";
 
-const ADMIN_EMAIL = "heidirwarren@gmail.com";
+const ADMIN_EMAIL = "yourskiseason@gmail.com";
 
 export default function AdminPage() {
   const [user, setUser] = useState<any>(null);

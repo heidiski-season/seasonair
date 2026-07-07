@@ -22,7 +22,7 @@ const columns = [
     title: "Get in Touch",
     links: [
       { href: "tel:+44 7748484443", label: "+44 7748484443" },
-      { href: "mailto:yourskiseaon@gmail.com", label: "heidirwarren@gmail.com" },
+      { href: "mailto:yourskiseaon@gmail.com", label: "yourskiseason@gmail.com" },
     ],
   },
 ];

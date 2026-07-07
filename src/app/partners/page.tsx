@@ -32,7 +32,7 @@ const steps = [
   {
     n: "01",
     title: "Intro call",
-    body: "To get started, feel free to get in touch with our team! Email heidirwarren@gmail.com or give us a call +447748484443 and we'll set up a quick call. We'll cover who we recruit, how the matching process works, what we check before placing anyone, and what it costs. No commitment needed, just a conversation.",
+    body: "To get started, feel free to get in touch with our team! Email yourskiseason@gmail.com or give us a call +447748484443 and we'll set up a quick call. We'll cover who we recruit, how the matching process works, what we check before placing anyone, and what it costs. No commitment needed, just a conversation.",
     img: "/contact-phone.png",
   },
   {
@@ -90,7 +90,7 @@ const faqs = [
   },
   {
     q: "How do I get started?",
-    a: "Just email us at heidirwarren@gmail.com or fill in the contact form. We'll set up an intro call within 48 hours.",
+    a: "Just email us at yourskiseason@gmail.com or fill in the contact form. We'll set up an intro call within 48 hours.",
   },
 ];
 
@@ -114,8 +114,8 @@ export default function PartnersPage() {
             <Button href="/contact" variant="glacier" size="lg">
               Get in touch
             </Button>
-            <Button href="mailto:heidirwarren@gmail.com" variant="ghost" size="lg" className="border-white/30 text-white hover:border-white">
-              heidirwarren@gmail.com
+            <Button href="mailto:yourskiseason@gmail.com" variant="ghost" size="lg" className="border-white/30 text-white hover:border-white">
+              yourskiseason@gmail.com
             </Button>
           </div>
         </Container>
@@ -190,8 +190,8 @@ export default function PartnersPage() {
             <Button href="/chalet-signup" variant="glacier" size="lg">
               Contact us
             </Button>
-            <Button href="mailto:heidirwarren@gmail.com" variant="ghost" size="lg" className="border-white/30 text-white hover:border-white">
-              heidirwarren@gmail.com
+            <Button href="mailto:yourskiseason@gmail.com" variant="ghost" size="lg" className="border-white/30 text-white hover:border-white">
+              yourskiseason@gmail.com
             </Button>
           </div>
         </Container>
