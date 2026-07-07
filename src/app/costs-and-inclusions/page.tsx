@@ -1,6 +1,6 @@
 import Container from "@/components/container";
 import Button from "@/components/button";
-import { Star, Wallet, DollarSign, MapPin, Plane, FileCheck, Fingerprint } from "lucide-react";
+import { Star, Wallet, DollarSign, MapPin, Plane, FileCheck } from "lucide-react";
 
 const included = [
   "No program fees!",
@@ -20,7 +20,7 @@ const benefits = [
   ];
 
 const earnings = [
-  { role: "Chalet Host", amount: "£1,000+" },
+  { role: "Chalet Host", amount: "€400+ per month" },
 ];
 
 const costs = [

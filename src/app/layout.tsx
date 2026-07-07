@@ -19,8 +19,8 @@ const lato = Lato({
 
 export const metadata: Metadata = {
   title: {
-    default: "SeasonAir — Ski Season Jobs & Gap Year Adventures",
-    template: "%s — SeasonAir",
+    default: "YourSkiSeason — Have the best Ski Season of Your Life",
+    template: "%s — YourSkiSeason",
   },
   description: "Work a ski season in the Alps.",
 };
