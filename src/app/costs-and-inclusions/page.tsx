@@ -1,23 +1,38 @@
 import Container from "@/components/container";
 import Button from "@/components/button";
-import { Star, Wallet, DollarSign, MapPin, Plane, FileCheck} from "lucide-react";
+import {
+  Star,
+  Wallet,
+  DollarSign,
+  MapPin,
+  Plane,
+  FileCheck,
+  Utensils,
+  Home,
+  LifeBuoy,
+  ShieldCheck,
+  Video,
+  Backpack,
+  Ticket,
+  Beer,
+} from "lucide-react";
 
 const included = [
-  "No program fees!",
-  "Food when working",
-  "Accommodation",
-  "Support acquiring a work permit if applicable",
-  "Transport from the aiport to resort at the start and end of the season",
-  "Emergency support throughout the season",
+  { icon: DollarSign, label: "No program fees!" },
+  { icon: Utensils, label: "Food when working" },
+  { icon: Home, label: "Accommodation" },
+  { icon: FileCheck, label: "Support acquiring a work permit if applicable" },
+  { icon: Plane, label: "Transport from the airport to resort at the start and end of the season" },
+  { icon: LifeBuoy, label: "Emergency support throughout the season" },
 ];
 
 const benefits = [
-  "Health insurance",
-  "Virtual orientation before arriving",
-  "Equipment hire",
-  "Seasonal lift pass",
-  "PUB DISCOUNTS",
-  ];
+  { icon: ShieldCheck, label: "Health insurance" },
+  { icon: Video, label: "Virtual orientation before arriving" },
+  { icon: Backpack, label: "Equipment hire" },
+  { icon: Ticket, label: "Seasonal lift pass" },
+  { icon: Beer, label: "PUB DISCOUNTS" },
+];
 
 const earnings = [
   { role: "Chalet Host", amount: "€400+ per month" },
@@ -26,7 +41,6 @@ const earnings = [
 const costs = [
   { icon: Plane, label: "Flights" },
   { icon: FileCheck, label: "Police check, DBS (if applicable)" },
-
 ];
 
 export default function CostsAndInclusionsPage() {
@@ -54,7 +68,10 @@ export default function CostsAndInclusionsPage() {
             <h2 className="mt-3 font-display text-2xl font-bold">What's included?</h2>
             <ul className="mt-5 space-y-3 border-b border-white/25 pb-5">
               {included.map((item) => (
-                <li key={item} className="text-sm">{item}</li>
+                <li key={item.label} className="flex items-center gap-3 text-sm">
+                  <item.icon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
+                  {item.label}
+                </li>
               ))}
             </ul>
             <p className="mt-5 text-sm font-semibold uppercase tracking-wide">
@@ -62,7 +79,10 @@ export default function CostsAndInclusionsPage() {
             </p>
             <ul className="mt-4 space-y-3">
               {benefits.map((item) => (
-                <li key={item} className="text-sm">{item}</li>
+                <li key={item.label} className="flex items-center gap-3 text-sm">
+                  <item.icon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
+                  {item.label}
+                </li>
               ))}
             </ul>
           </div>
