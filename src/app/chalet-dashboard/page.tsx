@@ -82,7 +82,7 @@ export default function ChaletDashboardPage() {
       <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
-          SeasonAir — Chalet Portal
+          YourSkiSeason — Chalet Portal
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-sm text-[#5b6472]">{user?.email}</span>
@@ -98,7 +98,7 @@ export default function ChaletDashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="font-display text-3xl font-semibold text-[#11203a]">
-            Find your next seasonaire
+            Find YourSkiSeason
           </h1>
           <p className="mt-2 text-[#5b6472]">
             {profiles.length} available candidates · {reviewed.length} on your review list

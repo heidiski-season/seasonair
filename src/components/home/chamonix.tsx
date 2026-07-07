@@ -4,7 +4,7 @@ import FadeIn from "@/components/fade-in";
 import { CheckCircle } from "lucide-react";
 
 const bullets = [
-  "International seasonaire community from day one",
+  "International YourSkiSeaone community from day one",
   "In the heart of Mont Blanc, considered capital of the Alps",
   "Paid roles in chalets as host, drivers, cleaners or chefs",
   "The support you need to organise Accommodation, visas and contracts",
@@ -48,7 +48,7 @@ export default function Chamonix() {
           <div className="relative overflow-hidden rounded-3xl">
             <img
               src="/chalet-kitchen.png"
-              alt="Seasonaires cooking together in an Alpine chalet kitchen"
+              alt="YourSkiSeaones cooking together in an Alpine chalet kitchen"
               className="w-full h-[380px] object-cover object-center"
             />
             {/* Small caption badge */}

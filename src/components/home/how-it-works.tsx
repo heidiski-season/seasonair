@@ -21,7 +21,7 @@ const steps = [
   {
     n: "04",
     title: "Jet off into the community",
-    body: "Get connected to your resort's SeasonAir WhatsApp chat before you land, pub meets, ski meets, ski community all in one place.",
+    body: "Get connected to your resort's YourSkiSeaon WhatsApp chat before you land, pub meets, ski meets, ski community all in one place.",
   },
 ];
 

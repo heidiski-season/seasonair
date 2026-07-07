@@ -29,7 +29,7 @@ export default function CtaSplit() {
             drops out.
           </p>
           <Button href="/partners" variant="glacier" size="lg" className="mt-7">
-            Hire through SeasonAir
+            Hire through YourSkiSeaon
           </Button>
         </FadeIn>
       </Container>

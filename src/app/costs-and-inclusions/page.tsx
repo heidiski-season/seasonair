@@ -1,6 +1,6 @@
 import Container from "@/components/container";
 import Button from "@/components/button";
-import { Star, Wallet, DollarSign, MapPin, Plane, FileCheck } from "lucide-react";
+import { Star, Wallet, DollarSign, MapPin, Plane, FileCheck} from "lucide-react";
 
 const included = [
   "No program fees!",
@@ -26,6 +26,7 @@ const earnings = [
 const costs = [
   { icon: Plane, label: "Flights" },
   { icon: FileCheck, label: "Police check, DBS (if applicable)" },
+
 ];
 
 export default function CostsAndInclusionsPage() {
@@ -107,7 +108,7 @@ export default function CostsAndInclusionsPage() {
               <h3 className="mt-2 font-display text-lg font-bold text-[#11203a]">No program fees</h3>
               <p className="mt-2 text-sm leading-relaxed text-[#5b6472]">
                 The advantage of our program is that there are no program
-                fees — we operate on a free-to-join basis for seasonaires.
+                fees — we operate on a free-to-join basis for YourSkiSeaones.
               </p>
             </div>
           </div>

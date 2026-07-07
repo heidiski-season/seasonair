@@ -47,7 +47,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 font-display text-2xl font-semibold text-[#11203a]">
             <Mountain className="h-6 w-6 text-[#3fa9e0]" strokeWidth={2.5} />
-            SeasonAir
+            YourSkiSeaon
           </Link>
           <p className="mt-2 text-sm text-[#5b6472]">Welcome back</p>
         </div>

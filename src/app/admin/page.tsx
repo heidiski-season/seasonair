@@ -11,8 +11,8 @@ const ADMIN_EMAIL = "heidirwarren@gmail.com";
 export default function AdminPage() {
   const [user, setUser] = useState<any>(null);
   const [chalets, setChalets] = useState<any[]>([]);
-  const [seasonaires, setSeasonaires] = useState<any[]>([]);
-  const [tab, setTab] = useState<"chalets" | "seasonaires">("chalets");
+  const [YourSkiSeaones, setYourSkiSeaones] = useState<any[]>([]);
+  const [tab, setTab] = useState<"chalets" | "YourSkiSeaones">("chalets");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -30,13 +30,13 @@ export default function AdminPage() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      const { data: seasonaires } = await supabase
+      const { data: YourSkiSeaones } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
 
       setChalets(chalets || []);
-      setSeasonaires(seasonaires || []);
+      setYourSkiSeaones(YourSkiSeaones || []);
       setLoading(false);
     };
     getData();
@@ -58,12 +58,12 @@ export default function AdminPage() {
     setChalets(c => c.map(ch => ch.id === id ? { ...ch, approved: false } : ch));
   };
 
-  const approveSeasonaire = async (id: string) => {
+  const approveYourSkiSeaone = async (id: string) => {
     await supabase
       .from("profiles")
       .update({ approved: true })
       .eq("id", id);
-    setSeasonaires(s => s.map(p => p.id === id ? { ...p, approved: true } : p));
+    setYourSkiSeaones(s => s.map(p => p.id === id ? { ...p, approved: true } : p));
   };
 
   const updateStatus = async (id: string, status: string) => {
@@ -71,7 +71,7 @@ export default function AdminPage() {
       .from("profiles")
       .update({ status })
       .eq("id", id);
-    setSeasonaires(s => s.map(p => p.id === id ? { ...p, status } : p));
+    setYourSkiSeaones(s => s.map(p => p.id === id ? { ...p, status } : p));
   };
 
   const handleLogout = async () => {
@@ -92,7 +92,7 @@ export default function AdminPage() {
       <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
-          SeasonAir — Admin
+          YourSkiSeaon — Admin
         </Link>
         <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-[#5b6472] hover:text-[#11203a]">
           <LogOut className="h-4 w-4" />
@@ -105,8 +105,8 @@ export default function AdminPage() {
         {/* Stats */}
         <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            { label: "Total seasonaires", value: seasonaires.length },
-            { label: "Approved seasonaires", value: seasonaires.filter(s => s.approved).length },
+            { label: "Total YourSkiSeaones", value: YourSkiSeaones.length },
+            { label: "Approved YourSkiSeaones", value: YourSkiSeaones.filter(s => s.approved).length },
             { label: "Chalet companies", value: chalets.length },
             { label: "Pending approval", value: chalets.filter(c => !c.approved).length },
           ].map(stat => (
@@ -126,10 +126,10 @@ export default function AdminPage() {
             Chalet companies ({chalets.length})
           </button>
           <button
-            onClick={() => setTab("seasonaires")}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "seasonaires" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+            onClick={() => setTab("YourSkiSeaones")}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "YourSkiSeaones" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
           >
-            Seasonaires ({seasonaires.length})
+            YourSkiSeaones ({YourSkiSeaones.length})
           </button>
         </div>
 
@@ -190,8 +190,8 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Seasonaires table */}
-        {tab === "seasonaires" && (
+        {/* YourSkiSeaones table */}
+        {tab === "YourSkiSeaones" && (
           <div className="rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
             <table className="w-full text-sm">
               <thead className="border-b border-[#dde1ea] bg-[#f7f8fb]">
@@ -204,10 +204,10 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#dde1ea]">
-                {seasonaires.length === 0 && (
-                  <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No seasonaires yet.</td></tr>
+                {YourSkiSeaones.length === 0 && (
+                  <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No YourSkiSeaones yet.</td></tr>
                 )}
-                {seasonaires.map(p => (
+                {YourSkiSeaones.map(p => (
                   <tr key={p.id} className="hover:bg-[#f7f8fb]">
                     <td className="px-6 py-4">
                       <p className="font-medium text-[#11203a]">{p.first_name} {p.last_name}</p>
@@ -230,7 +230,7 @@ export default function AdminPage() {
                     <td className="px-6 py-4">
                       {!p.approved ? (
                         <button
-                          onClick={() => approveSeasonaire(p.id)}
+                          onClick={() => approveYourSkiSeaone(p.id)}
                           className="flex items-center gap-1 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
                         >
                           <CheckCircle className="h-3 w-3" />

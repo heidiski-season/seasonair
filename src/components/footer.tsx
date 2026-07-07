@@ -78,7 +78,7 @@ export default function Footer() {
       </Container>
 
       <Container className="flex flex-col gap-3 border-t border-line py-6 text-xs text-stone sm:flex-row sm:items-center sm:justify-between">
-        <p>Copyright SeasonAir. All Rights Reserved 2026.</p>
+        <p>Copyright YourSkiSeaon. All Rights Reserved 2026.</p>
         <div className="flex gap-5">
           <Link href="https://www.smallerearth.com/privacy-policy" className="hover:text-night">Privacy Policy</Link>
           <Link href="https://www.smallerearth.com/terms-of-service"  className="hover:text-night">Terms of Use</Link>

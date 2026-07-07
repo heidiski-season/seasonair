@@ -24,7 +24,7 @@ export default function SignupPage() {
       password,
       options: {
         data: {
-          account_type: "seasonaire",
+          account_type: "YourSkiSeaone",
           first_name: firstName,
           last_name: lastName,
         },
@@ -49,7 +49,7 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 font-display text-2xl font-semibold text-[#11203a]">
             <Mountain className="h-6 w-6 text-[#3fa9e0]" strokeWidth={2.5} />
-            SeasonAir
+            YourSkiSeaon
           </Link>
           <h1 className="mt-4 font-display text-2xl font-semibold text-[#11203a]">
             Start your season application

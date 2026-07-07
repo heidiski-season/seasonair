@@ -62,7 +62,7 @@ const steps = [
   {
     n: "06",
     title: "Your staff arrive ready",
-    body: "Your new team member lands already connected to the SeasonAir resort community; the faster to settle in, the less likely to drop out. If something does go wrong, we help cover replacements.",
+    body: "Your new team member lands already connected to the YourSkiSeaon resort community; the faster to settle in, the less likely to drop out. If something does go wrong, we help cover replacements.",
     img: "/chalet-kitchen.png",
   },
 ];
@@ -70,7 +70,7 @@ const steps = [
 const faqs = [
   {
     q: "How much does it cost?",
-    a: "There are no upfront fees. Our placement fee is charged once your SeasonAir staff member starts their contract. Get in touch for current pricing.",
+    a: "There are no upfront fees. Our placement fee is charged once your YourSkiSeaon staff member starts their contract. Get in touch for current pricing.",
   },
   {
     q: "What if a staff member drops out mid-season?",
@@ -181,7 +181,7 @@ export default function PartnersPage() {
       <section className="bg-[#0a1628] py-20 text-center sm:py-24">
         <Container>
           <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">
-            Ready to hire your next seasonaire?
+            Ready to hire your next YourSkiSeaone?
           </h2>
           <p className="mt-4 text-white/70">
             Get in touch and we'll have an intro call set up within 48 hours.
