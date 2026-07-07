@@ -62,7 +62,7 @@ const steps = [
   {
     n: "06",
     title: "Your staff arrive ready",
-    body: "Your new team member lands already connected to the YourSkiSeaon resort community; the faster to settle in, the less likely to drop out. If something does go wrong, we help cover replacements.",
+    body: "Your new team member lands already connected to the YourSkiSeason resort community; the faster to settle in, the less likely to drop out. If something does go wrong, we help cover replacements.",
     img: "/chalet-kitchen.png",
   },
 ];
@@ -70,7 +70,7 @@ const steps = [
 const faqs = [
   {
     q: "How much does it cost?",
-    a: "There are no upfront fees. Our placement fee is charged once your YourSkiSeaon staff member starts their contract. Get in touch for current pricing.",
+    a: "There are no upfront fees. Our placement fee is charged once your YourSkiSeason staff member starts their contract. Get in touch for current pricing.",
   },
   {
     q: "What if a staff member drops out mid-season?",

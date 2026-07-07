@@ -112,7 +112,7 @@ const completedSections = sections.filter(s => {
       <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
-          YourSkiSeaon
+          YourSkiSeason
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-sm text-[#5b6472]">{user?.email}</span>
@@ -419,7 +419,7 @@ const completedSections = sections.filter(s => {
                         }}
                       />
                     </label>
-                    <p className="mt-1 text-xs text-[#8d95a3]">Your video is private — only the YourSkiSeaon team and matched chalets will see it.</p>
+                    <p className="mt-1 text-xs text-[#8d95a3]">Your video is private — only the YourSkiSeason team and matched chalets will see it.</p>
                   </div>
                 </div>
                 <div><label className={lc}>Photo portfolio link</label><input type="url" placeholder="https://..." value={form.photo_url} onChange={e => update("photo_url", e.target.value)} className={ic} /></div>

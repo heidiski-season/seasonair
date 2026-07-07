@@ -16,7 +16,7 @@ export default function FounderQuote() {
               <div className="h-56 w-56 rounded-full overflow-hidden ring-4 ring-glacier/30">
                 <img
                   src="/heidi.png"
-                  alt="Heidi, co-founder of YourSkiSeaon"
+                  alt="Heidi, co-founder of YourSkiSeason"
                   className="h-full w-full object-cover object-[center_45%] scale-140"
                 />
               </div>
@@ -33,7 +33,7 @@ export default function FounderQuote() {
               <div className="h-56 w-56 rounded-full overflow-hidden ring-4 ring-glacier/30">
                 <img
                   src="/annabel.png"
-                  alt="Annabel, co-founder of YourSkiSeaon"
+                  alt="Annabel, co-founder of YourSkiSeason"
                   className="h-full w-full object-cover object-center"
                 />
               </div>
@@ -49,7 +49,7 @@ export default function FounderQuote() {
           {/* Quote */}
           <FadeIn delay={0.1} className="flex-1">
             <span className="font-mono text-xs uppercase tracking-wider text-glacier">
-              Why YourSkiSeaon exists
+              Why YourSkiSeason exists
             </span>
             <blockquote className="mt-5">
               <p className="font-display text-2xl font-medium leading-snug text-white sm:text-3xl">
@@ -57,7 +57,7 @@ export default function FounderQuote() {
               </p>
               <footer className="mt-6">
                 <p className="font-semibold text-white">Heidi</p>
-                <p className="text-sm text-white/50">Co-founder, YourSkiSeaon</p>
+                <p className="text-sm text-white/50">Co-founder, YourSkiSeason</p>
               </footer>
             </blockquote>
           </FadeIn>

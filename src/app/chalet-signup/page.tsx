@@ -64,7 +64,7 @@ export default function ChaletSignupPage() {
             Application received!
           </h1>
           <p className="mt-3 text-sm text-[#5b6472] leading-relaxed">
-            Thanks for registering <strong>{companyName}</strong> with YourSkiSeaon.
+            Thanks for registering <strong>{companyName}</strong> with YourSkiSeason.
             We review all chalet company applications manually to keep our
             YourSkiSeason profiles secure. We'll be in touch at{" "}
             <strong>{email}</strong> within 48 hours.
@@ -73,7 +73,7 @@ export default function ChaletSignupPage() {
             href="/"
             className="mt-8 inline-block rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
           >
-            Back to YourSkiSeaon
+            Back to YourSkiSeason
           </Link>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function ChaletSignupPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 font-display text-2xl font-semibold text-[#11203a]">
             <Mountain className="h-6 w-6 text-[#3fa9e0]" strokeWidth={2.5} />
-            YourSkiSeaon
+            YourSkiSeason
           </Link>
           <h1 className="mt-4 font-display text-2xl font-semibold text-[#11203a]">
             Register your chalet company
@@ -132,7 +132,7 @@ export default function ChaletSignupPage() {
           )}
 
           <div className="mt-4 rounded-xl bg-[#f7f8fb] p-4 text-xs text-[#5b6472]">
-            ℹ️ Your account will be reviewed by the YourSkiSeaon team before you can access YourSkiSeason profiles. This usually takes less than 48 hours.
+            ℹ️ Your account will be reviewed by the YourSkiSeason team before you can access YourSkiSeason profiles. This usually takes less than 48 hours.
           </div>
 
           <button

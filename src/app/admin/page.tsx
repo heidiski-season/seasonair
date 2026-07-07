@@ -92,7 +92,7 @@ export default function AdminPage() {
       <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
-          YourSkiSeaon — Admin
+          YourSkiSeason — Admin
         </Link>
         <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-[#5b6472] hover:text-[#11203a]">
           <LogOut className="h-4 w-4" />
