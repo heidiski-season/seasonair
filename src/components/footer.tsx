@@ -22,7 +22,7 @@ const columns = [
     title: "Get in Touch",
     links: [
       { href: "tel:+44 7748484443", label: "+44 7748484443" },
-      { href: "mailto:heidirwarren@gmail.com", label: "heidirwarren@gmail.com" },
+      { href: "mailto:yourskiseaon@gmail.com", label: "heidirwarren@gmail.com" },
     ],
   },
 ];
@@ -36,7 +36,7 @@ export default function Footer() {
         <div>
           <Link href="/" className="flex items-center gap-2 font-display text-xl font-semibold text-night">
             <Mountain className="h-5 w-5 text-glacier" strokeWidth={2.5} aria-hidden="true" />
-            SeasonAir
+            YourSkiSeason
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-stone">
             We place students and young people  into real, paid ski-season
