@@ -181,7 +181,7 @@ export default function PartnersPage() {
       <section className="bg-[#0a1628] py-20 text-center sm:py-24">
         <Container>
           <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">
-            Ready to hire your next YourSkiSeaone?
+            Ready to hire your next YourSkiSeason?
           </h2>
           <p className="mt-4 text-white/70">
             Get in touch and we'll have an intro call set up within 48 hours.

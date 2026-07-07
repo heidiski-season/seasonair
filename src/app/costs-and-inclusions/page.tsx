@@ -108,7 +108,7 @@ export default function CostsAndInclusionsPage() {
               <h3 className="mt-2 font-display text-lg font-bold text-[#11203a]">No program fees</h3>
               <p className="mt-2 text-sm leading-relaxed text-[#5b6472]">
                 The advantage of our program is that there are no program
-                fees — we operate on a free-to-join basis for YourSkiSeaones.
+                fees — we operate on a free-to-join basis for YourSkiSeasons.
               </p>
             </div>
           </div>

@@ -24,7 +24,7 @@ export default function SignupPage() {
       password,
       options: {
         data: {
-          account_type: "YourSkiSeaone",
+          account_type: "YourSkiSeason",
           first_name: firstName,
           last_name: lastName,
         },

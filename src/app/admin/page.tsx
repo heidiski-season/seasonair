@@ -11,8 +11,8 @@ const ADMIN_EMAIL = "yourskiseason@gmail.com";
 export default function AdminPage() {
   const [user, setUser] = useState<any>(null);
   const [chalets, setChalets] = useState<any[]>([]);
-  const [YourSkiSeaones, setYourSkiSeaones] = useState<any[]>([]);
-  const [tab, setTab] = useState<"chalets" | "YourSkiSeaones">("chalets");
+  const [YourSkiSeasons, setYourSkiSeasons] = useState<any[]>([]);
+  const [tab, setTab] = useState<"chalets" | "YourSkiSeasons">("chalets");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -30,13 +30,13 @@ export default function AdminPage() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      const { data: YourSkiSeaones } = await supabase
+      const { data: YourSkiSeasons } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
 
       setChalets(chalets || []);
-      setYourSkiSeaones(YourSkiSeaones || []);
+      setYourSkiSeasons(YourSkiSeasons || []);
       setLoading(false);
     };
     getData();
@@ -58,12 +58,12 @@ export default function AdminPage() {
     setChalets(c => c.map(ch => ch.id === id ? { ...ch, approved: false } : ch));
   };
 
-  const approveYourSkiSeaone = async (id: string) => {
+  const approveYourSkiSeason = async (id: string) => {
     await supabase
       .from("profiles")
       .update({ approved: true })
       .eq("id", id);
-    setYourSkiSeaones(s => s.map(p => p.id === id ? { ...p, approved: true } : p));
+    setYourSkiSeasons(s => s.map(p => p.id === id ? { ...p, approved: true } : p));
   };
 
   const updateStatus = async (id: string, status: string) => {
@@ -71,7 +71,7 @@ export default function AdminPage() {
       .from("profiles")
       .update({ status })
       .eq("id", id);
-    setYourSkiSeaones(s => s.map(p => p.id === id ? { ...p, status } : p));
+    setYourSkiSeasons(s => s.map(p => p.id === id ? { ...p, status } : p));
   };
 
   const handleLogout = async () => {
@@ -105,8 +105,8 @@ export default function AdminPage() {
         {/* Stats */}
         <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            { label: "Total YourSkiSeaones", value: YourSkiSeaones.length },
-            { label: "Approved YourSkiSeaones", value: YourSkiSeaones.filter(s => s.approved).length },
+            { label: "Total YourSkiSeasons", value: YourSkiSeasons.length },
+            { label: "Approved YourSkiSeasons", value: YourSkiSeasons.filter(s => s.approved).length },
             { label: "Chalet companies", value: chalets.length },
             { label: "Pending approval", value: chalets.filter(c => !c.approved).length },
           ].map(stat => (
@@ -126,10 +126,10 @@ export default function AdminPage() {
             Chalet companies ({chalets.length})
           </button>
           <button
-            onClick={() => setTab("YourSkiSeaones")}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "YourSkiSeaones" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+            onClick={() => setTab("YourSkiSeasons")}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "YourSkiSeasons" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
           >
-            YourSkiSeaones ({YourSkiSeaones.length})
+            YourSkiSeasons ({YourSkiSeasons.length})
           </button>
         </div>
 
@@ -190,8 +190,8 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* YourSkiSeaones table */}
-        {tab === "YourSkiSeaones" && (
+        {/* YourSkiSeasons table */}
+        {tab === "YourSkiSeasons" && (
           <div className="rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
             <table className="w-full text-sm">
               <thead className="border-b border-[#dde1ea] bg-[#f7f8fb]">
@@ -204,10 +204,10 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#dde1ea]">
-                {YourSkiSeaones.length === 0 && (
-                  <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No YourSkiSeaones yet.</td></tr>
+                {YourSkiSeasons.length === 0 && (
+                  <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No YourSkiSeasons yet.</td></tr>
                 )}
-                {YourSkiSeaones.map(p => (
+                {YourSkiSeasons.map(p => (
                   <tr key={p.id} className="hover:bg-[#f7f8fb]">
                     <td className="px-6 py-4">
                       <p className="font-medium text-[#11203a]">{p.first_name} {p.last_name}</p>
@@ -230,7 +230,7 @@ export default function AdminPage() {
                     <td className="px-6 py-4">
                       {!p.approved ? (
                         <button
-                          onClick={() => approveYourSkiSeaone(p.id)}
+                          onClick={() => approveYourSkiSeason(p.id)}
                           className="flex items-center gap-1 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
                         >
                           <CheckCircle className="h-3 w-3" />

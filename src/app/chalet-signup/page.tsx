@@ -66,7 +66,7 @@ export default function ChaletSignupPage() {
           <p className="mt-3 text-sm text-[#5b6472] leading-relaxed">
             Thanks for registering <strong>{companyName}</strong> with YourSkiSeaon.
             We review all chalet company applications manually to keep our
-            YourSkiSeaone profiles secure. We'll be in touch at{" "}
+            YourSkiSeason profiles secure. We'll be in touch at{" "}
             <strong>{email}</strong> within 48 hours.
           </p>
           <Link
@@ -94,7 +94,7 @@ export default function ChaletSignupPage() {
             Register your chalet company
           </h1>
           <p className="mt-2 text-sm text-[#5b6472]">
-            We review all chalet company accounts before granting access to YourSkiSeaone profiles.
+            We review all chalet company accounts before granting access to YourSkiSeason profiles.
           </p>
         </div>
 
@@ -132,7 +132,7 @@ export default function ChaletSignupPage() {
           )}
 
           <div className="mt-4 rounded-xl bg-[#f7f8fb] p-4 text-xs text-[#5b6472]">
-            ℹ️ Your account will be reviewed by the YourSkiSeaon team before you can access YourSkiSeaone profiles. This usually takes less than 48 hours.
+            ℹ️ Your account will be reviewed by the YourSkiSeaon team before you can access YourSkiSeason profiles. This usually takes less than 48 hours.
           </div>
 
           <button
@@ -152,7 +152,7 @@ export default function ChaletSignupPage() {
         </div>
 
         <p className="mt-6 text-center text-sm text-[#5b6472]">
-          Are you a YourSkiSeaone?{" "}
+          Are you a YourSkiSeason?{" "}
           <Link href="/signup" className="font-semibold text-[#3fa9e0] hover:underline">
             Apply here instead
           </Link>
