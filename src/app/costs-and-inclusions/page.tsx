@@ -73,9 +73,7 @@ export default function CostsAndInclusionsPage() {
               Earn pocket money
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-[#5b6472]">
-              Alongside your wage, most seasonaires pick up tips and extra
-              shifts. Here's a guide to what our roles typically pay per
-              season, before deductions:
+              Most of your cost are covered, so this is just spending money per month for as much apres as desired ;):
             </p>
             <ul className="mt-6 divide-y divide-[#dde1ea]">
               {earnings.map((e) => (
