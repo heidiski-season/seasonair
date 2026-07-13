@@ -4,29 +4,37 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mountain, CheckCircle, Circle, LogOut, User } from "lucide-react";
+import {
+  Mountain, CheckCircle, Circle, LogOut, User,
+  Home as HomeIcon, ChevronDown, ChevronUp, FolderOpen,
+  CalendarClock, HelpCircle, Settings as SettingsIcon,
+} from "lucide-react";
 
-const sections = [
+const profileSections = [
   { id: "basic", label: "Basic Information" },
+  { id: "emergency", label: "Emergency Contact" },
   { id: "availability", label: "Availability" },
   { id: "education", label: "Education" },
   { id: "skills", label: "Skills & Experience" },
-  { id: "role", label: "Role Preference" },  
+  { id: "role", label: "Role Preference" },
   { id: "motivation", label: "About You" },
-  { id: "showcase", label: "Showcase" },
 ];
+
+const requiredSections = [...profileSections, { id: "showcase", label: "Showcase" }];
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("overview");
+  const [profileOpen, setProfileOpen] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const router = useRouter();
 
   const [form, setForm] = useState({
     first_name: "", last_name: "", email: "", phone: "", dob: "", nationality: "",
+    emergency_name: "", emergency_relationship: "", emergency_phone: "",
     start_date: "", end_date: "",
     university: "", degree: "", grad_year: "", other_education: "",
     has_hospitality: "", hospitality_details: "",
@@ -83,36 +91,42 @@ export default function DashboardPage() {
     router.push("/");
   };
 
-const completedSections = sections.filter(s => {
-    if (s.id === "basic") return form.first_name && form.email;
+  const completedSections = requiredSections.filter(s => {
+    if (s.id === "basic") return form.first_name && form.last_name && form.email && form.dob && form.nationality && form.photo_url;
+    if (s.id === "emergency") return form.emergency_name && form.emergency_phone;
     if (s.id === "availability") return form.start_date && form.end_date;
-    if (s.id === "education") return form.university || form.other_education;
-    if (s.id === "skills") return form.skills || form.has_driving || form.has_language;
+    if (s.id === "education") return form.university && form.degree && form.grad_year;
+    if (s.id === "skills") return form.skills && form.has_driving && form.has_language;
     if (s.id === "role") return form.roles.length > 0;
-    if (s.id === "motivation") return form.why_season !== "";
+    if (s.id === "motivation") return form.why_season && form.motivation;
     if (s.id === "showcase") return form.video_url !== "";
     return false;
   });
 
   const ic = "w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20";
   const lc = "mb-1.5 block text-sm font-medium text-[#11203a]";
+  const saveBtn = "mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors";
 
   const roles = ["Chalet Host", "Driver", "Cleaner", "Chef"];
-  
+
   if (loading) return (
     <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center">
       <p className="text-[#5b6472]">Loading your dashboard...</p>
     </div>
   );
 
+  const navItemClass = (id: string) =>
+    `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+      active === id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f7f8fb]"
+    }`;
+
   return (
     <div className="min-h-screen bg-[#f7f8fb]">
 
-      {/* Top bar */}
       <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
-          YourSkiSeason
+          YourSkiSeason Dashboard
         </Link>
         <div className="flex items-center gap-4">
           <span className="text-sm text-[#5b6472]">{user?.email}</span>
@@ -125,11 +139,9 @@ const completedSections = sections.filter(s => {
 
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-10 sm:px-6">
 
-        {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="rounded-2xl border border-[#dde1ea] bg-white p-4">
 
-            {/* Status badge */}
             <div className="mb-4 rounded-xl bg-[#f7f8fb] p-4 text-center">
               <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-[#3fa9e0]/10">
                 <User className="h-6 w-6 text-[#3fa9e0]" />
@@ -144,44 +156,68 @@ const completedSections = sections.filter(s => {
               }`}>
                 {profile?.status || "pending"}
               </span>
-            </div>
-
-            {/* Progress */}
-            <div className="mb-2 border-t border-[#dde1ea] pt-4">
-              <p className="px-3 pb-2 font-mono text-xs uppercase tracking-wider text-[#8d95a3]">
-                {completedSections.length}/{sections.length} complete
+              <p className="mt-2 font-mono text-xs uppercase tracking-wider text-[#8d95a3]">
+                {completedSections.length}/{requiredSections.length} complete
               </p>
             </div>
 
             <nav className="space-y-1">
-              <button
-                onClick={() => setActive("overview")}
-                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${active === "overview" ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f7f8fb]"}`}
-              >
-                Overview
+              <button onClick={() => setActive("overview")} className={navItemClass("overview")}>
+                <HomeIcon className="h-4 w-4 shrink-0" />
+                Home
               </button>
-              {sections.map(s => (
-                <button
-                  key={s.id}
-                  onClick={() => setActive(s.id)}
-                  className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${active === s.id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f7f8fb]"}`}
-                >
-                  {completedSections.find(c => c.id === s.id) ? (
-                    <CheckCircle className="h-4 w-4 shrink-0 text-[#3fa9e0]" />
-                  ) : (
-                    <Circle className="h-4 w-4 shrink-0 text-[#dde1ea]" />
-                  )}
-                  {s.label}
-                </button>
-              ))}
+
+              <button
+                onClick={() => setProfileOpen(o => !o)}
+                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#5b6472] hover:bg-[#f7f8fb]"
+              >
+                <span className="flex items-center gap-3">
+                  <User className="h-4 w-4 shrink-0" />
+                  Profile
+                </span>
+                {profileOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </button>
+
+              {profileOpen && (
+                <div className="ml-4 space-y-1 border-l border-[#dde1ea] pl-3">
+                  {profileSections.map(s => (
+                    <button key={s.id} onClick={() => setActive(s.id)} className={navItemClass(s.id)}>
+                      {completedSections.find(c => c.id === s.id) ? (
+                        <CheckCircle className="h-4 w-4 shrink-0 text-[#3fa9e0]" />
+                      ) : (
+                        <Circle className="h-4 w-4 shrink-0 text-[#dde1ea]" />
+                      )}
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <button onClick={() => setActive("interview")} className={navItemClass("interview")}>
+                <CalendarClock className="h-4 w-4 shrink-0" />
+                Interview Availability
+              </button>
+
+              <button onClick={() => setActive("documents")} className={navItemClass("documents")}>
+                <FolderOpen className="h-4 w-4 shrink-0" />
+                Documents
+              </button>
+
+              <div className="my-2 border-t border-[#dde1ea]" />
+
+              <button onClick={() => setActive("help")} className={navItemClass("help")}>
+                <HelpCircle className="h-4 w-4 shrink-0" />
+                Help & Information
+              </button>
+              <button onClick={() => setActive("settings")} className={navItemClass("settings")}>
+                <SettingsIcon className="h-4 w-4 shrink-0" />
+                Settings
+              </button>
             </nav>
           </div>
         </aside>
 
-        {/* Main */}
         <main className="flex-1 space-y-6">
-
-          {/* Overview */}
           {active === "overview" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">
@@ -191,7 +227,6 @@ const completedSections = sections.filter(s => {
                 Complete your profile so we can match you to the perfect season.
               </p>
 
-              {/* Status timeline */}
               <div className="mt-8 grid grid-cols-4 gap-4">
                 {["Applied", "Interview", "Matched", "Hired"].map((stage, i) => (
                   <div key={stage} className={`rounded-xl border p-4 text-center text-sm font-medium ${
@@ -200,45 +235,87 @@ const completedSections = sections.filter(s => {
                     {stage}
                   </div>
                 ))}
-
               </div>
-<div className="mt-8 rounded-xl bg-[#f7f8fb] p-5">
+
+              <div className="mt-8 rounded-xl bg-[#f7f8fb] p-5">
                 <p className="text-sm font-medium text-[#11203a]">How this works</p>
                 <p className="mt-1 text-sm text-[#5b6472]">
-                  Fill in as much as you can — your progress saves automatically, so you can log out and come back anytime. Only your name and a photo are required to submit. You can keep editing even after submitting.
+                  Fill in as much as you can — your progress saves automatically, so you can log out and come back anytime. All sections must be complete before you can submit. You can keep editing even after submitting.
                 </p>
               </div>
 
-              {/* Submit button */}
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="mt-8 border-t border-[#dde1ea] pt-6">
+                <h2 className="font-display text-lg font-semibold text-[#11203a]">Showcase</h2>
+                <p className="mt-1 text-sm text-[#5b6472]">Optional — but strongly recommended.</p>
+
+                <div className="mt-4">
+                  <label className={lc}>Video introduction</label>
+                  <div className="mt-1.5 rounded-xl border-2 border-dashed border-[#3fa9e0]/40 bg-white p-6 text-center">
+                    <label className="cursor-pointer">
+                      {form.video_url ? (
+                        <div>
+                          <video src={form.video_url} controls className="mx-auto max-h-64 rounded-xl" />
+                          <p className="mt-3 text-sm font-medium text-[#3fa9e0]">✓ Uploaded — click to replace</p>
+                        </div>
+                      ) : (
+                        <p className="text-sm font-medium text-[#11203a]">Click to upload a video</p>
+                      )}
+                      <input
+                        type="file"
+                        accept="video/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const fileName = `${user.id}-${Date.now()}-${file.name}`;
+                          const { error } = await supabase.storage.from("videos").upload(fileName, file);
+                          if (error) { alert("Upload failed: " + error.message); return; }
+                          const { data } = supabase.storage.from("videos").getPublicUrl(fileName);
+                          update("video_url", data.publicUrl);
+                          await supabase.from("profiles").upsert({ id: user.id, ...form, video_url: data.publicUrl });
+                        }}
+                      />
+                    </label>
+                    <p className="mt-1 text-xs text-[#8d95a3]">Your video is private — only the YourSkiSeason team and matched chalets will see it.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-col gap-3 border-t border-[#dde1ea] pt-6 sm:flex-row sm:items-center">
                 <button
                   onClick={async () => {
-                    if (!form.first_name) {
-                      alert("Please add your name in Basic Information before submitting.");
-                      setActive("basic");
+                    if (completedSections.length < requiredSections.length) {
+                      alert("Please complete all sections before submitting.");
                       return;
                     }
                     await supabase.from("profiles").upsert({ id: user.id, ...form, status: "submitted" });
                     setProfile({ ...profile, status: "submitted" });
                     alert("Application submitted! You can still edit your profile anytime.");
                   }}
-                  className="rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+                  disabled={completedSections.length < requiredSections.length}
+                  className={`rounded-full px-8 py-3 font-semibold text-white transition-colors ${
+                    completedSections.length < requiredSections.length
+                      ? "bg-[#dde1ea] text-[#8d95a3] cursor-not-allowed"
+                      : "bg-[#3fa9e0] hover:bg-[#2c8bbd]"
+                  }`}
                 >
                   {profile?.status === "submitted" ? "Update my application" : "Submit application 🎿"}
                 </button>
                 <p className="text-xs text-[#8d95a3]">
-                    {profile?.status === "submitted" ? "✓ Submitted — you can keep editing" : "You can keep editing after submitting"}
+                  {profile?.status === "submitted"
+                    ? "✓ Submitted — you can keep editing"
+                    : completedSections.length < requiredSections.length
+                    ? `Complete all sections to submit (${completedSections.length}/${requiredSections.length} done)`
+                    : "All sections complete — ready to submit"}
                 </p>
               </div>
             </div>
           )}
 
-         {/* Basic Info */}
           {active === "basic" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Basic Information</h1>
 
-              {/* Photo + name row */}
               <div className="mt-6 flex items-center gap-6">
                 <label className="cursor-pointer shrink-0">
                   <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-[#3fa9e0]/40 bg-[#f7f8fb] hover:border-[#3fa9e0]">
@@ -275,7 +352,6 @@ const completedSections = sections.filter(s => {
                 </div>
               </div>
 
-              {/* Rest of the info */}
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <div><label className={lc}>Email *</label><input type="email" value={form.email} onChange={e => update("email", e.target.value)} className={ic} /></div>
                 <div><label className={lc}>Phone</label><input type="tel" value={form.phone} onChange={e => update("phone", e.target.value)} className={ic} /></div>
@@ -283,27 +359,35 @@ const completedSections = sections.filter(s => {
                 <div><label className={lc}>Nationality *</label><input type="text" value={form.nationality} onChange={e => update("nationality", e.target.value)} className={ic} /></div>
               </div>
 
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
             </div>
           )}
 
-          {/* Availability */}
+          {active === "emergency" && (
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Emergency Contact</h1>
+              <p className="mt-1 text-sm text-[#5b6472]">Who should we contact in case of an emergency during your season?</p>
+              <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                <div><label className={lc}>Contact name *</label><input type="text" value={form.emergency_name} onChange={e => update("emergency_name", e.target.value)} className={ic} /></div>
+                <div><label className={lc}>Relationship</label><input type="text" value={form.emergency_relationship} onChange={e => update("emergency_relationship", e.target.value)} className={ic} /></div>
+                <div><label className={lc}>Phone number *</label><input type="tel" value={form.emergency_phone} onChange={e => update("emergency_phone", e.target.value)} className={ic} /></div>
+              </div>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+            </div>
+          )}
+
           {active === "availability" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Availability</h1>
+              <p className="mt-1 text-sm text-[#5b6472]">These are the season dates you're available to work — not your interview times (see "Interview Availability" in the sidebar for that).</p>
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 <div><label className={lc}>Available from</label><input type="date" value={form.start_date} onChange={e => update("start_date", e.target.value)} className={ic} /></div>
                 <div><label className={lc}>Available until</label><input type="date" value={form.end_date} onChange={e => update("end_date", e.target.value)} className={ic} /></div>
               </div>
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
             </div>
           )}
 
-          {/* Role */}
           {active === "role" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Role Preference</h1>
@@ -315,14 +399,10 @@ const completedSections = sections.filter(s => {
                   </label>
                 ))}
               </div>
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
             </div>
           )}
 
-
-          {/* About You */}
           {active === "motivation" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">About You</h1>
@@ -336,13 +416,10 @@ const completedSections = sections.filter(s => {
                   <textarea rows={4} value={form.motivation} onChange={e => update("motivation", e.target.value)} className={ic} />
                 </div>
               </div>
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
             </div>
           )}
 
-          {/* Skills */}
           {active === "skills" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Skills & Experience</h1>
@@ -364,13 +441,10 @@ const completedSections = sections.filter(s => {
                   {form.has_language === "Yes" && <input type="text" placeholder="e.g. French (intermediate)" value={form.language_details} onChange={e => update("language_details", e.target.value)} className={`${ic} mt-3`} />}
                 </div>
               </div>
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
             </div>
           )}
 
-          {/* Education */}
           {active === "education" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Education</h1>
@@ -380,87 +454,39 @@ const completedSections = sections.filter(s => {
                 <div><label className={lc}>Graduation year</label><input type="text" value={form.grad_year} onChange={e => update("grad_year", e.target.value)} className={ic} /></div>
                 <div><label className={lc}>Other qualifications</label><textarea rows={3} value={form.other_education} onChange={e => update("other_education", e.target.value)} className={ic} /></div>
               </div>
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
             </div>
           )}
 
-          {/* Showcase */}
-          {active === "showcase" && (
+          {active === "interview" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Showcase</h1>
-              <p className="mt-1 text-sm text-[#5b6472]">Optional — but strongly recommended.</p>
-              <div className="mt-6 space-y-5">
-                <div>
-                  <label className={lc}>Video introduction</label>
-                  <div className="mt-1.5 rounded-xl border-2 border-dashed border-[#3fa9e0]/40 bg-white p-6 text-center">
-                    <label className="cursor-pointer">
-                      {form.video_url ? (
-                        <div>
-                          <video src={form.video_url} controls className="mx-auto max-h-64 rounded-xl" />
-                          <p className="mt-3 text-sm font-medium text-[#3fa9e0]">✓ Uploaded — click to replace</p>
-                        </div>
-                      ) : (
-                        <p className="text-sm font-medium text-[#11203a]">Click to upload a video</p>
-                      )}
-                      <input
-                        type="file"
-                        accept="video/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          const fileName = `${user.id}-${Date.now()}-${file.name}`;
-                          const { error } = await supabase.storage.from("videos").upload(fileName, file);
-                          if (error) { alert("Upload failed: " + error.message); return; }
-                          const { data } = supabase.storage.from("videos").getPublicUrl(fileName);
-                          update("video_url", data.publicUrl);
-                        }}
-                      />
-                    </label>
-                    <p className="mt-1 text-xs text-[#8d95a3]">Your video is private — only the YourSkiSeason team and matched chalets will see it.</p>
-                  </div>
-                </div>
-                <div><label className={lc}>Photo portfolio link</label><input type="url" placeholder="https://..." value={form.photo_url} onChange={e => update("photo_url", e.target.value)} className={ic} /></div>
-              </div>
-              <button onClick={saveProfile} className="mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors">
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save"}
-              </button>
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Interview Availability</h1>
+              <p className="mt-2 text-sm text-[#5b6472]">
+                Coming in the next update — you'll be able to pick specific dates and times you're free for a call, so chalet companies can book you in directly.
+              </p>
+            </div>
+          )}
 
-{/* Final submit */}
-              <div className="mt-8 border-t border-[#dde1ea] pt-6">
-                {profile?.status === "submitted" ? (
-                  <div className="rounded-xl bg-green-50 p-5 text-center">
-                    <p className="font-semibold text-green-700">✓ Application submitted</p>
-                    <p className="mt-1 text-sm text-green-600">
-                      Your application is now locked and with our team. We'll be in touch soon!
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <p className="mb-4 text-sm text-[#5b6472]">
-                      Ready to submit? Once you submit, your application is final and can't be changed — so double-check everything first.
-                    </p>
-                    <button
-                      onClick={async () => {
-                        if (!form.first_name || !form.photo_url) {
-                          alert("Please add your name and a photo in Basic Information before submitting.");
-                          setActive("basic");
-                          return;
-                        }
-                        if (!confirm("Submit your application? You won't be able to make changes after this.")) return;
-                        await supabase.from("profiles").upsert({ id: user.id, ...form, status: "submitted" });
-                        setProfile({ ...profile, status: "submitted" });
-                        alert("Application submitted! Good luck 🎿");
-                      }}
-                      className="rounded-full bg-[#11203a] px-10 py-3.5 font-semibold text-white hover:bg-[#1b2f54] transition-colors"
-                    >
-                      Submit application 🎿
-                    </button>
-                  </>
-                )}
-              </div>
+          {active === "documents" && (
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
+              <p className="mt-2 text-sm text-[#5b6472]">
+                Coming in the next update — you'll be able to upload your Flight Itinerary, Passport, Police Check, Program Agreement, and Qualification Agreement here.
+              </p>
+            </div>
+          )}
+
+          {active === "help" && (
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Help & Information</h1>
+              <p className="mt-2 text-sm text-[#5b6472]">Questions? Email us — details coming soon.</p>
+            </div>
+          )}
+
+          {active === "settings" && (
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Settings</h1>
+              <p className="mt-2 text-sm text-[#5b6472]">Account settings coming soon.</p>
             </div>
           )}
 
