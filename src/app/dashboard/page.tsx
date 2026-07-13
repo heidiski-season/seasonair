@@ -22,6 +22,14 @@ const profileSections = [
 
 const requiredSections = [...profileSections, { id: "showcase", label: "Showcase" }];
 
+const documentTypes = [
+  { id: "flight_itinerary", label: "Flight Itinerary" },
+  { id: "passport", label: "Passport" },
+  { id: "police_check", label: "Police Check" },
+  { id: "program_agreement", label: "Program Agreement" },
+  { id: "qualification_agreement", label: "Qualification Agreement" },
+];
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -43,6 +51,7 @@ export default function DashboardPage() {
     skills: "", roles: [] as string[],
     resort: "", why_season: "", motivation: "",
     video_url: "", photo_url: "",
+    documents: {} as Record<string, { url: string; status: string }>,
   });
 
   useEffect(() => {
@@ -84,6 +93,16 @@ export default function DashboardPage() {
       .upsert({ id: user.id, ...form });
     if (!error) { setSaved(true); setTimeout(() => setSaved(false), 2000); }
     setSaving(false);
+  };
+
+  const uploadDocument = async (docId: string, file: File) => {
+    const fileName = `${user.id}-${docId}-${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from("documents").upload(fileName, file);
+    if (error) { alert("Upload failed: " + error.message); return; }
+    const { data } = supabase.storage.from("documents").getPublicUrl(fileName);
+    const updatedDocs = { ...form.documents, [docId]: { url: data.publicUrl, status: "uploaded" } };
+    setForm(f => ({ ...f, documents: updatedDocs }));
+    await supabase.from("profiles").upsert({ id: user.id, ...form, documents: updatedDocs });
   };
 
   const handleLogout = async () => {
@@ -471,8 +490,50 @@ export default function DashboardPage() {
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
               <p className="mt-2 text-sm text-[#5b6472]">
-                Coming in the next update — you'll be able to upload your Flight Itinerary, Passport, Police Check, Program Agreement, and Qualification Agreement here.
+                These are the documents you need to upload to complete your application. All files must be
+                2MB or less and be a JPEG or PDF.
               </p>
+
+              <div className="mt-6 divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
+                {documentTypes.map((docType) => {
+                  const doc = form.documents?.[docType.id];
+                  const status = doc?.status || "not_started";
+
+                  return (
+                    <div key={docType.id} className="flex items-center justify-between gap-4 p-4">
+                      <div>
+                        <p className="text-sm font-medium text-[#11203a]">{docType.label}</p>
+                        <span className={`mt-1 inline-flex items-center gap-1.5 text-xs font-medium ${
+                          status === "uploaded" ? "text-green-600" : "text-[#8d95a3]"
+                        }`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${
+                            status === "uploaded" ? "bg-green-500" : "bg-[#dde1ea]"
+                          }`} />
+                          {status === "uploaded" ? "Uploaded — pending review" : "Not started"}
+                        </span>
+                      </div>
+
+                      <label className="cursor-pointer shrink-0 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors">
+                        {doc?.url ? "Replace" : "Upload"}
+                        <input
+                          type="file"
+                          accept="image/jpeg,application/pdf"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            if (file.size > 2 * 1024 * 1024) {
+                              alert("File must be 2MB or less.");
+                              return;
+                            }
+                            uploadDocument(docType.id, file);
+                          }}
+                        />
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
