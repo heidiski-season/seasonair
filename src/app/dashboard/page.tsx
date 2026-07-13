@@ -102,6 +102,22 @@ export default function DashboardPage() {
     setSaving(false);
   };
 
+  // Moves to the next Profile section in order, or back to Home if this was the last one
+  const goToNextSection = () => {
+    const order = profileSections.map(s => s.id);
+    const idx = order.indexOf(active);
+    if (idx !== -1 && idx < order.length - 1) {
+      setActive(order[idx + 1]);
+    } else {
+      setActive("overview");
+    }
+  };
+
+  const saveAndContinue = async () => {
+    await saveProfile();
+    goToNextSection();
+  };
+
   const uploadDocument = async (docId: string, file: File) => {
     const fileName = `${user.id}-${docId}-${Date.now()}-${file.name}`;
     const { error } = await supabase.storage.from("documents").upload(fileName, file);
@@ -132,6 +148,7 @@ export default function DashboardPage() {
   const ic = "w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20";
   const lc = "mb-1.5 block text-sm font-medium text-[#11203a]";
   const saveBtn = "mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors";
+  const continueBtn = "mt-6 rounded-full border border-[#3fa9e0] px-8 py-3 font-semibold text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors";
 
   const roles = ["Chalet Host", "Driver", "Cleaner", "Chef"];
 
@@ -385,7 +402,10 @@ export default function DashboardPage() {
                 <div><label className={lc}>Nationality *</label><input type="text" value={form.nationality} onChange={e => update("nationality", e.target.value)} className={ic} /></div>
               </div>
 
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
             </div>
           )}
 
@@ -398,7 +418,10 @@ export default function DashboardPage() {
                 <div><label className={lc}>Relationship</label><input type="text" value={form.emergency_relationship} onChange={e => update("emergency_relationship", e.target.value)} className={ic} /></div>
                 <div><label className={lc}>Phone number *</label><input type="tel" value={form.emergency_phone} onChange={e => update("emergency_phone", e.target.value)} className={ic} /></div>
               </div>
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
             </div>
           )}
 
@@ -410,7 +433,10 @@ export default function DashboardPage() {
                 <div><label className={lc}>Available from</label><input type="date" value={form.start_date} onChange={e => update("start_date", e.target.value)} className={ic} /></div>
                 <div><label className={lc}>Available until</label><input type="date" value={form.end_date} onChange={e => update("end_date", e.target.value)} className={ic} /></div>
               </div>
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
             </div>
           )}
 
@@ -425,7 +451,10 @@ export default function DashboardPage() {
                   </label>
                 ))}
               </div>
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
             </div>
           )}
 
@@ -442,7 +471,10 @@ export default function DashboardPage() {
                   <textarea rows={4} value={form.motivation} onChange={e => update("motivation", e.target.value)} className={ic} />
                 </div>
               </div>
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and finish →</button>
+              </div>
             </div>
           )}
 
@@ -467,7 +499,10 @@ export default function DashboardPage() {
                   {form.has_language === "Yes" && <input type="text" placeholder="e.g. French (intermediate)" value={form.language_details} onChange={e => update("language_details", e.target.value)} className={`${ic} mt-3`} />}
                 </div>
               </div>
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
             </div>
           )}
 
@@ -480,7 +515,10 @@ export default function DashboardPage() {
                 <div><label className={lc}>Graduation year</label><input type="text" value={form.grad_year} onChange={e => update("grad_year", e.target.value)} className={ic} /></div>
                 <div><label className={lc}>Other qualifications</label><textarea rows={3} value={form.other_education} onChange={e => update("other_education", e.target.value)} className={ic} /></div>
               </div>
-              <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
             </div>
           )}
 
