@@ -4,19 +4,21 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mountain, LogOut, MapPin, Calendar, Briefcase, Search, Star, MessageSquare } from "lucide-react";
+import { Mountain, LogOut, MapPin, Calendar, Briefcase, Search, Star, MessageSquare, Clock } from "lucide-react";
 
 const tabs = ["Overview", "Skills", "Education", "About You", "Availability"];
 
 export default function ChaletDashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("Overview");
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [reviewed, setReviewed] = useState<string[]>([]);
+  const [view, setView] = useState<"browse" | "review">("browse");
+  const [bookingFor, setBookingFor] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,7 +34,13 @@ export default function ChaletDashboardPage() {
         .select("*")
         .eq("approved", true);
 
+      const { data: reviewRows } = await supabase
+        .from("reviews")
+        .select("*")
+        .eq("chalet_id", user.id);
+
       setProfiles(profiles || []);
+      setReviews(reviewRows || []);
       setLoading(false);
     };
     getData();
@@ -43,14 +51,42 @@ export default function ChaletDashboardPage() {
     router.push("/");
   };
 
+  const reviewedIds = reviews.map(r => r.profile_id);
+
+  const getReviewStatus = (profileId: string) =>
+    reviews.find(r => r.profile_id === profileId)?.status;
+
   const markStatus = async (profileId: string, status: string) => {
     await supabase.from("reviews").upsert({
       chalet_id: user.id,
       profile_id: profileId,
       status,
     });
-    if (status === "interested") setReviewed(r => [...r, profileId]);
+    setReviews(r => {
+      const existing = r.find(row => row.profile_id === profileId);
+      if (existing) {
+        return r.map(row => row.profile_id === profileId ? { ...row, status } : row);
+      }
+      return [...r, { chalet_id: user.id, profile_id: profileId, status }];
+    });
     setSelected(null);
+  };
+
+  const bookSlot = async (profileId: string, slot: { date: string; time: string }) => {
+    await supabase.from("reviews").upsert({
+      chalet_id: user.id,
+      profile_id: profileId,
+      status: "interview",
+      booked_slot: slot,
+    });
+    setReviews(r => {
+      const existing = r.find(row => row.profile_id === profileId);
+      if (existing) {
+        return r.map(row => row.profile_id === profileId ? { ...row, status: "interview", booked_slot: slot } : row);
+      }
+      return [...r, { chalet_id: user.id, profile_id: profileId, status: "interview", booked_slot: slot }];
+    });
+    setBookingFor(null);
   };
 
   const filtered = profiles.filter(p => {
@@ -60,6 +96,8 @@ export default function ChaletDashboardPage() {
     const matchesFilter = filter === "all" || (p.roles || []).includes(filter);
     return matchesSearch && matchesFilter;
   });
+
+  const reviewCandidates = profiles.filter(p => reviewedIds.includes(p.id));
 
   const roleFilters = ["all", "Chalet Host", "Chalet Chef", "Lift Operator", "Resort Rep", "Ski Tech"];
 
@@ -96,94 +134,247 @@ export default function ChaletDashboardPage() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="font-display text-3xl font-semibold text-[#11203a]">
             Find YourSkiSeason
           </h1>
           <p className="mt-2 text-[#5b6472]">
-            {profiles.length} available candidates · {reviewed.length} on your review list
+            {profiles.length} available candidates · {reviewedIds.length} on your review list
           </p>
         </div>
 
-        {/* Search + filters */}
-        <div className="mb-6 flex flex-wrap gap-4">
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8d95a3]" />
-            <input
-              type="text"
-              placeholder="Search by name or resort..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-[#dde1ea] bg-white pl-10 pr-4 py-2.5 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {roleFilters.map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filter === f
-                  ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]"
-                  : "border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
-              >
-                {f === "all" ? "All roles" : f}
-              </button>
-            ))}
-          </div>
+        {/* Browse / Review toggle */}
+        <div className="mb-6 flex gap-2">
+          <button
+            onClick={() => setView("browse")}
+            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+              view === "browse" ? "bg-[#3fa9e0] text-white" : "bg-white text-[#5b6472] border border-[#dde1ea]"
+            }`}
+          >
+            Browse
+          </button>
+          <button
+            onClick={() => setView("review")}
+            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
+              view === "review" ? "bg-[#3fa9e0] text-white" : "bg-white text-[#5b6472] border border-[#dde1ea]"
+            }`}
+          >
+            Review ({reviewedIds.length})
+          </button>
         </div>
 
-        {/* Profile cards grid */}
-        {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
-            <p className="text-[#5b6472]">No candidates match your search.</p>
-          </div>
-        ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map(profile => (
-              <div key={profile.id} className={`rounded-2xl border bg-white p-6 transition-all ${reviewed.includes(profile.id) ? "border-[#3fa9e0] ring-2 ring-[#3fa9e0]/20" : "border-[#dde1ea] hover:border-[#3fa9e0] hover:shadow-lg"}`}>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
-                    {profile.first_name?.[0]}{profile.last_name?.[0]}
-                  </div>
-                  <div>
-                    <h3 className="font-display font-semibold text-[#11203a]">
-                      {profile.first_name} {profile.last_name}
-                    </h3>
-                    <p className="text-xs text-[#8d95a3]">
-                      {age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}
-                    </p>
-                  </div>
-                  {reviewed.includes(profile.id) && (
-                    <span className="ml-auto rounded-full bg-[#3fa9e0]/10 px-2.5 py-1 font-mono text-[10px] uppercase text-[#3fa9e0]">
-                      On review
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-4 space-y-2 text-sm text-[#5b6472]">
-                  {profile.resort && (
-                    <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#3fa9e0]" />{profile.resort}</div>
-                  )}
-                  {profile.start_date && (
-                    <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[#3fa9e0]" />{profile.start_date} → {profile.end_date}</div>
-                  )}
-                  {profile.roles?.length > 0 && (
-                    <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[#3fa9e0]" />{profile.roles.slice(0, 2).join(", ")}</div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
-                  className="mt-5 w-full rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
-                >
-                  View profile
-                </button>
+        {view === "browse" && (
+          <>
+            {/* Search + filters */}
+            <div className="mb-6 flex flex-wrap gap-4">
+              <div className="relative w-full sm:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8d95a3]" />
+                <input
+                  type="text"
+                  placeholder="Search by name or resort..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full rounded-xl border border-[#dde1ea] bg-white pl-10 pr-4 py-2.5 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none"
+                />
               </div>
-            ))}
-          </div>
+              <div className="flex flex-wrap gap-2">
+                {roleFilters.map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filter === f
+                      ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]"
+                      : "border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+                  >
+                    {f === "all" ? "All roles" : f}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Profile cards grid */}
+            {filtered.length === 0 ? (
+              <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                <p className="text-[#5b6472]">No candidates match your search.</p>
+              </div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map(profile => (
+                  <div key={profile.id} className={`rounded-2xl border bg-white p-6 transition-all ${reviewedIds.includes(profile.id) ? "border-[#3fa9e0] ring-2 ring-[#3fa9e0]/20" : "border-[#dde1ea] hover:border-[#3fa9e0] hover:shadow-lg"}`}>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
+                        {profile.first_name?.[0]}{profile.last_name?.[0]}
+                      </div>
+                      <div>
+                        <h3 className="font-display font-semibold text-[#11203a]">
+                          {profile.first_name} {profile.last_name}
+                        </h3>
+                        <p className="text-xs text-[#8d95a3]">
+                          {age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}
+                        </p>
+                      </div>
+                      {reviewedIds.includes(profile.id) && (
+                        <span className="ml-auto rounded-full bg-[#3fa9e0]/10 px-2.5 py-1 font-mono text-[10px] uppercase text-[#3fa9e0]">
+                          On review
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mt-4 space-y-2 text-sm text-[#5b6472]">
+                      {profile.resort && (
+                        <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#3fa9e0]" />{profile.resort}</div>
+                      )}
+                      {profile.start_date && (
+                        <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[#3fa9e0]" />{profile.start_date} → {profile.end_date}</div>
+                      )}
+                      {profile.roles?.length > 0 && (
+                        <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[#3fa9e0]" />{profile.roles.slice(0, 2).join(", ")}</div>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
+                      className="mt-5 w-full rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+                    >
+                      View profile
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {view === "review" && (
+          <>
+            {reviewCandidates.length === 0 ? (
+              <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                <p className="text-[#5b6472]">You haven't added anyone to review yet. Browse candidates and click "Add to review."</p>
+              </div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {reviewCandidates.map(profile => {
+                  const status = getReviewStatus(profile.id);
+                  const bookedSlot = reviews.find(r => r.profile_id === profile.id)?.booked_slot;
+
+                  return (
+                    <div key={profile.id} className="rounded-2xl border border-[#3fa9e0] ring-2 ring-[#3fa9e0]/20 bg-white p-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
+                          {profile.first_name?.[0]}{profile.last_name?.[0]}
+                        </div>
+                        <div>
+                          <h3 className="font-display font-semibold text-[#11203a]">
+                            {profile.first_name} {profile.last_name}
+                          </h3>
+                          <p className="text-xs text-[#8d95a3]">
+                            {age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}
+                          </p>
+                        </div>
+                        <span className={`ml-auto rounded-full px-2.5 py-1 font-mono text-[10px] uppercase ${
+                          status === "interview" ? "bg-blue-100 text-blue-700" : "bg-[#3fa9e0]/10 text-[#3fa9e0]"
+                        }`}>
+                          {status === "interview" ? "Interview booked" : "On review"}
+                        </span>
+                      </div>
+
+                      {bookedSlot ? (
+                        <div className="mt-4 rounded-xl bg-blue-50 p-3 text-sm text-blue-700">
+                          <span className="font-medium">Booked:</span>{" "}
+                          {new Date(bookedSlot.date + "T00:00").toLocaleDateString("en-GB", {
+                            weekday: "short", day: "numeric", month: "short",
+                          })}{" "}
+                          at {bookedSlot.time}
+                        </div>
+                      ) : (
+                        <div className="mt-4 space-y-2 text-sm text-[#5b6472]">
+                          {profile.roles?.length > 0 && (
+                            <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[#3fa9e0]" />{profile.roles.slice(0, 2).join(", ")}</div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-5 flex gap-2">
+                        <button
+                          onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
+                          className="flex-1 rounded-full border border-[#dde1ea] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
+                        >
+                          View profile
+                        </button>
+                        <button
+                          onClick={() => setBookingFor(profile)}
+                          className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+                        >
+                          <MessageSquare className="h-4 w-4" /> Book a chat
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      {/* Book a chat modal — shows the candidate's submitted interview availability */}
+      {bookingFor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8" onClick={() => setBookingFor(null)}>
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl font-semibold text-[#11203a]">
+                Book a chat with {bookingFor.first_name}
+              </h2>
+              <button onClick={() => setBookingFor(null)} className="text-[#8d95a3] hover:text-[#11203a] text-xl">✕</button>
+            </div>
+
+            {(!bookingFor.interview_availability || bookingFor.interview_availability.length === 0) ? (
+              <p className="mt-6 rounded-xl bg-[#f7f8fb] p-5 text-sm text-[#5b6472]">
+                {bookingFor.first_name} hasn't added any interview availability yet. Try reaching out directly via their contact details, or check back later.
+              </p>
+            ) : (
+              <div className="mt-5 space-y-4">
+                <p className="text-sm text-[#5b6472]">
+                  <Clock className="mr-1.5 inline h-4 w-4" />
+                  Pick a slot from {bookingFor.first_name}'s submitted availability:
+                </p>
+                {Object.entries(
+                  (bookingFor.interview_availability as { date: string; time: string }[]).reduce(
+                    (groups: Record<string, string[]>, slot) => {
+                      groups[slot.date] = groups[slot.date] || [];
+                      groups[slot.date].push(slot.time);
+                      return groups;
+                    },
+                    {}
+                  )
+                )
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([date, times]) => (
+                    <div key={date} className="rounded-xl border border-[#dde1ea] p-4">
+                      <p className="text-sm font-semibold text-[#11203a]">
+                        {new Date(date + "T00:00").toLocaleDateString("en-GB", {
+                          weekday: "long", day: "numeric", month: "long",
+                        })}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {times.sort().map(time => (
+                          <button
+                            key={time}
+                            onClick={() => bookSlot(bookingFor.id, { date, time })}
+                            className="rounded-full border border-[#3fa9e0] px-3 py-1.5 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0] hover:text-white transition-colors"
+                          >
+                            {time}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Full profile modal — Camp Canada style with tabs */}
       {selected && (
@@ -212,7 +403,7 @@ export default function ChaletDashboardPage() {
                         <Star className="h-4 w-4" /> Add to review
                       </button>
                       <button
-                        onClick={() => markStatus(selected.id, "interview")}
+                        onClick={() => setBookingFor(selected)}
                         className="flex items-center gap-1.5 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-semibold text-[#3fa9e0] hover:bg-[#3fa9e0]/10"
                       >
                         <MessageSquare className="h-4 w-4" /> Schedule interview
