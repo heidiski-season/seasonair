@@ -30,6 +30,11 @@ const documentTypes = [
   { id: "qualification_agreement", label: "Qualification Agreement" },
 ];
 
+const timeSlotOptions = [
+  "09:00", "10:00", "11:00", "12:00", "13:00",
+  "14:00", "15:00", "16:00", "17:00", "18:00",
+];
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -38,8 +43,7 @@ export default function DashboardPage() {
   const [profileOpen, setProfileOpen] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [newSlotDate, setNewSlotDate] = useState("");
-  const [newSlotTime, setNewSlotTime] = useState("");
+  const [slotPickerDate, setSlotPickerDate] = useState("");
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -481,152 +485,180 @@ export default function DashboardPage() {
           )}
 
           {active === "interview" && (
-  <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-    <h1 className="font-display text-2xl font-semibold text-[#11203a]">Interview Availability</h1>
-    <p className="mt-2 text-sm text-[#5b6472]">
-      Add the dates and times you're free for a call. Chalet companies will pick a slot from this list to book you in.
-    </p>
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Interview Availability</h1>
+              <p className="mt-2 text-sm text-[#5b6472]">
+                Pick a date, then tap the time slots you're free for a call. Chalet companies will book you into one of these.
+              </p>
 
-    <div className="mt-6 flex flex-wrap items-end gap-3">
-      <div>
-        <label className={lc}>Date</label>
-        <input
-          type="date"
-          value={newSlotDate}
-          onChange={e => setNewSlotDate(e.target.value)}
-          className={ic}
-        />
-      </div>
-      <div>
-        <label className={lc}>Time</label>
-        <input
-          type="time"
-          value={newSlotTime}
-          onChange={e => setNewSlotTime(e.target.value)}
-          className={ic}
-        />
-      </div>
-      <button
-        onClick={async () => {
-          if (!newSlotDate || !newSlotTime) {
-            alert("Please pick both a date and a time.");
-            return;
-          }
-          const updated = [...(form.interview_availability || []), { date: newSlotDate, time: newSlotTime }];
-          setForm(f => ({ ...f, interview_availability: updated }));
-          await supabase.from("profiles").upsert({ id: user.id, ...form, interview_availability: updated });
-          setNewSlotDate("");
-          setNewSlotTime("");
-        }}
-        className="rounded-full bg-[#3fa9e0] px-6 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
-      >
-        Add slot
-      </button>
-    </div>
-
-    <div className="mt-8">
-      {(!form.interview_availability || form.interview_availability.length === 0) ? (
-        <p className="rounded-xl bg-[#f7f8fb] p-5 text-sm text-[#5b6472]">
-          You haven't added any interview slots yet.
-        </p>
-      ) : (
-        <div className="divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
-          {form.interview_availability
-            .slice()
-            .sort((a: any, b: any) => (a.date + a.time).localeCompare(b.date + b.time))
-            .map((slot: any, i: number) => (
-              <div key={i} className="flex items-center justify-between gap-4 p-4">
-                <span className="text-sm font-medium text-[#11203a]">
-                  {new Date(slot.date + "T" + slot.time).toLocaleDateString("en-GB", {
-                    weekday: "short", day: "numeric", month: "short",
-                  })}{" "}
-                  at {slot.time}
-                </span>
-                <button
-                  onClick={async () => {
-                    const updated = form.interview_availability.filter((s: any) =>
-                      !(s.date === slot.date && s.time === slot.time)
-                    );
-                    setForm(f => ({ ...f, interview_availability: updated }));
-                    await supabase.from("profiles").upsert({ id: user.id, ...form, interview_availability: updated });
-                  }}
-                  className="text-sm font-medium text-red-500 hover:text-red-600"
-                >
-                  Remove
-                </button>
+              <div className="mt-6">
+                <label className={lc}>Date</label>
+                <input
+                  type="date"
+                  value={slotPickerDate}
+                  onChange={e => setSlotPickerDate(e.target.value)}
+                  className={`${ic} max-w-xs`}
+                />
               </div>
-            ))}
-        </div>
-      )}
-    </div>
-  </div>
-)}
+
+              {slotPickerDate && (
+                <div className="mt-5">
+                  <p className="mb-2 text-sm font-medium text-[#11203a]">Available time slots</p>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                    {timeSlotOptions.map((time) => {
+                      const isSelected = (form.interview_availability || []).some(
+                        (s: any) => s.date === slotPickerDate && s.time === time
+                      );
+                      return (
+                        <button
+                          key={time}
+                          onClick={async () => {
+                            const exists = (form.interview_availability || []).some(
+                              (s: any) => s.date === slotPickerDate && s.time === time
+                            );
+                            const updated = exists
+                              ? form.interview_availability.filter(
+                                  (s: any) => !(s.date === slotPickerDate && s.time === time)
+                                )
+                              : [...(form.interview_availability || []), { date: slotPickerDate, time }];
+                            setForm(f => ({ ...f, interview_availability: updated }));
+                            await supabase.from("profiles").upsert({ id: user.id, ...form, interview_availability: updated });
+                          }}
+                          className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+                            isSelected
+                              ? "border-[#3fa9e0] bg-[#3fa9e0] text-white"
+                              : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+                          }`}
+                        >
+                          {time}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-8 border-t border-[#dde1ea] pt-6">
+                <p className="mb-3 text-sm font-medium text-[#11203a]">Your selected slots</p>
+                {(!form.interview_availability || form.interview_availability.length === 0) ? (
+                  <p className="rounded-xl bg-[#f7f8fb] p-5 text-sm text-[#5b6472]">
+                    You haven't added any interview slots yet.
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {Object.entries(
+                      (form.interview_availability as { date: string; time: string }[]).reduce(
+                        (groups: Record<string, string[]>, slot) => {
+                          groups[slot.date] = groups[slot.date] || [];
+                          groups[slot.date].push(slot.time);
+                          return groups;
+                        },
+                        {}
+                      )
+                    )
+                      .sort(([a], [b]) => a.localeCompare(b))
+                      .map(([date, times]) => (
+                        <div key={date} className="rounded-xl border border-[#dde1ea] p-4">
+                          <p className="text-sm font-semibold text-[#11203a]">
+                            {new Date(date + "T00:00").toLocaleDateString("en-GB", {
+                              weekday: "long", day: "numeric", month: "long",
+                            })}
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {times.sort().map((time) => (
+                              <span
+                                key={time}
+                                className="flex items-center gap-2 rounded-full bg-[#3fa9e0]/10 px-3 py-1 text-xs font-medium text-[#3fa9e0]"
+                              >
+                                {time}
+                                <button
+                                  onClick={async () => {
+                                    const updated = form.interview_availability.filter(
+                                      (s: any) => !(s.date === date && s.time === time)
+                                    );
+                                    setForm(f => ({ ...f, interview_availability: updated }));
+                                    await supabase.from("profiles").upsert({ id: user.id, ...form, interview_availability: updated });
+                                  }}
+                                  className="text-[#3fa9e0] hover:text-red-500"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {active === "documents" && (
-  <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-    <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
 
-    {profile?.status === "matched" || profile?.status === "hired" ? (
-      <>
-        <p className="mt-2 text-sm text-[#5b6472]">
-          These are the documents you need to upload to complete your application. All files must be
-          2MB or less and be a JPEG or PDF.
-        </p>
+              {profile?.status === "matched" || profile?.status === "hired" ? (
+                <>
+                  <p className="mt-2 text-sm text-[#5b6472]">
+                    These are the documents you need to upload to complete your application. All files must be
+                    2MB or less and be a JPEG or PDF.
+                  </p>
 
-        <div className="mt-6 divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
-          {documentTypes.map((docType) => {
-            const doc = form.documents?.[docType.id];
-            const status = doc?.status || "not_started";
+                  <div className="mt-6 divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
+                    {documentTypes.map((docType) => {
+                      const doc = form.documents?.[docType.id];
+                      const status = doc?.status || "not_started";
 
-            return (
-              <div key={docType.id} className="flex items-center justify-between gap-4 p-4">
-                <div>
-                  <p className="text-sm font-medium text-[#11203a]">{docType.label}</p>
-                  <span className={`mt-1 inline-flex items-center gap-1.5 text-xs font-medium ${
-                    status === "uploaded" ? "text-green-600" : "text-[#8d95a3]"
-                  }`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${
-                      status === "uploaded" ? "bg-green-500" : "bg-[#dde1ea]"
-                    }`} />
-                    {status === "uploaded" ? "Uploaded — pending review" : "Not started"}
-                  </span>
+                      return (
+                        <div key={docType.id} className="flex items-center justify-between gap-4 p-4">
+                          <div>
+                            <p className="text-sm font-medium text-[#11203a]">{docType.label}</p>
+                            <span className={`mt-1 inline-flex items-center gap-1.5 text-xs font-medium ${
+                              status === "uploaded" ? "text-green-600" : "text-[#8d95a3]"
+                            }`}>
+                              <span className={`h-1.5 w-1.5 rounded-full ${
+                                status === "uploaded" ? "bg-green-500" : "bg-[#dde1ea]"
+                              }`} />
+                              {status === "uploaded" ? "Uploaded — pending review" : "Not started"}
+                            </span>
+                          </div>
+
+                          <label className="cursor-pointer shrink-0 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors">
+                            {doc?.url ? "Replace" : "Upload"}
+                            <input
+                              type="file"
+                              accept="image/jpeg,application/pdf"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                if (file.size > 2 * 1024 * 1024) {
+                                  alert("File must be 2MB or less.");
+                                  return;
+                                }
+                                uploadDocument(docType.id, file);
+                              }}
+                            />
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-[#dde1ea] bg-[#f7f8fb] py-12 text-center">
+                  <svg className="h-10 w-10 text-[#8d95a3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                  <p className="mt-4 text-sm font-medium text-[#11203a]">Documents will unlock once you're hired</p>
+                  <p className="mt-1 max-w-sm text-sm text-[#5b6472]">
+                    Once a chalet company hires you, this section will open up so you can upload your Flight Itinerary, Passport, Police Check, and agreements.
+                  </p>
                 </div>
-
-                <label className="cursor-pointer shrink-0 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors">
-                  {doc?.url ? "Replace" : "Upload"}
-                  <input
-                    type="file"
-                    accept="image/jpeg,application/pdf"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      if (file.size > 2 * 1024 * 1024) {
-                        alert("File must be 2MB or less.");
-                        return;
-                      }
-                      uploadDocument(docType.id, file);
-                    }}
-                  />
-                </label>
-              </div>
-            );
-          })}
-        </div>
-      </>
-    ) : (
-      <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-[#dde1ea] bg-[#f7f8fb] py-12 text-center">
-        <svg className="h-10 w-10 text-[#8d95a3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-        </svg>
-        <p className="mt-4 text-sm font-medium text-[#11203a]">Documents will unlock once you're hired</p>
-        <p className="mt-1 max-w-sm text-sm text-[#5b6472]">
-          Once a chalet company hires you, this section will open up so you can upload your Flight Itinerary, Passport, Police Check, and agreements.
-        </p>
-      </div>
-    )}
-  </div>
-)}
+              )}
+            </div>
+          )}
 
           {active === "help" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
