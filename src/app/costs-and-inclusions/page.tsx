@@ -9,12 +9,13 @@ import {
   FileCheck,
   Utensils,
   Home,
-  Phone,
+  LifeBuoy,
   ShieldCheck,
   Video,
   Backpack,
   Ticket,
   Beer,
+  Phone,
 } from "lucide-react";
 
 const included = [
@@ -23,7 +24,7 @@ const included = [
   { icon: Home, label: "Accommodation" },
   { icon: FileCheck, label: "Support acquiring a work permit if applicable" },
   { icon: Plane, label: "Transport from the airport to resort at the start and end of the season" },
-  { icon: LifeBuoy, label: "Emergency support throughout the season" },
+  { icon: Phone, label: "Emergency support throughout the season" },
 ];
 
 const benefits = [
