@@ -38,6 +38,8 @@ export default function DashboardPage() {
   const [profileOpen, setProfileOpen] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [newSlotDate, setNewSlotDate] = useState("");
+  const [newSlotTime, setNewSlotTime] = useState("");
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -52,6 +54,7 @@ export default function DashboardPage() {
     resort: "", why_season: "", motivation: "",
     video_url: "", photo_url: "",
     documents: {} as Record<string, { url: string; status: string }>,
+    interview_availability: [] as { date: string; time: string }[],
   });
 
   useEffect(() => {
@@ -478,13 +481,86 @@ export default function DashboardPage() {
           )}
 
           {active === "interview" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Interview Availability</h1>
-              <p className="mt-2 text-sm text-[#5b6472]">
-                Coming in the next update — you'll be able to pick specific dates and times you're free for a call, so chalet companies can book you in directly.
-              </p>
-            </div>
-          )}
+  <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+    <h1 className="font-display text-2xl font-semibold text-[#11203a]">Interview Availability</h1>
+    <p className="mt-2 text-sm text-[#5b6472]">
+      Add the dates and times you're free for a call. Chalet companies will pick a slot from this list to book you in.
+    </p>
+
+    <div className="mt-6 flex flex-wrap items-end gap-3">
+      <div>
+        <label className={lc}>Date</label>
+        <input
+          type="date"
+          value={newSlotDate}
+          onChange={e => setNewSlotDate(e.target.value)}
+          className={ic}
+        />
+      </div>
+      <div>
+        <label className={lc}>Time</label>
+        <input
+          type="time"
+          value={newSlotTime}
+          onChange={e => setNewSlotTime(e.target.value)}
+          className={ic}
+        />
+      </div>
+      <button
+        onClick={async () => {
+          if (!newSlotDate || !newSlotTime) {
+            alert("Please pick both a date and a time.");
+            return;
+          }
+          const updated = [...(form.interview_availability || []), { date: newSlotDate, time: newSlotTime }];
+          setForm(f => ({ ...f, interview_availability: updated }));
+          await supabase.from("profiles").upsert({ id: user.id, ...form, interview_availability: updated });
+          setNewSlotDate("");
+          setNewSlotTime("");
+        }}
+        className="rounded-full bg-[#3fa9e0] px-6 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+      >
+        Add slot
+      </button>
+    </div>
+
+    <div className="mt-8">
+      {(!form.interview_availability || form.interview_availability.length === 0) ? (
+        <p className="rounded-xl bg-[#f7f8fb] p-5 text-sm text-[#5b6472]">
+          You haven't added any interview slots yet.
+        </p>
+      ) : (
+        <div className="divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
+          {form.interview_availability
+            .slice()
+            .sort((a: any, b: any) => (a.date + a.time).localeCompare(b.date + b.time))
+            .map((slot: any, i: number) => (
+              <div key={i} className="flex items-center justify-between gap-4 p-4">
+                <span className="text-sm font-medium text-[#11203a]">
+                  {new Date(slot.date + "T" + slot.time).toLocaleDateString("en-GB", {
+                    weekday: "short", day: "numeric", month: "short",
+                  })}{" "}
+                  at {slot.time}
+                </span>
+                <button
+                  onClick={async () => {
+                    const updated = form.interview_availability.filter((s: any) =>
+                      !(s.date === slot.date && s.time === slot.time)
+                    );
+                    setForm(f => ({ ...f, interview_availability: updated }));
+                    await supabase.from("profiles").upsert({ id: user.id, ...form, interview_availability: updated });
+                  }}
+                  className="text-sm font-medium text-red-500 hover:text-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
           {active === "documents" && (
   <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
