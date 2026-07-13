@@ -487,55 +487,70 @@ export default function DashboardPage() {
           )}
 
           {active === "documents" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
-              <p className="mt-2 text-sm text-[#5b6472]">
-                These are the documents you need to upload to complete your application. All files must be
-                2MB or less and be a JPEG or PDF.
-              </p>
+  <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+    <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
 
-              <div className="mt-6 divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
-                {documentTypes.map((docType) => {
-                  const doc = form.documents?.[docType.id];
-                  const status = doc?.status || "not_started";
+    {profile?.status === "matched" || profile?.status === "hired" ? (
+      <>
+        <p className="mt-2 text-sm text-[#5b6472]">
+          These are the documents you need to upload to complete your application. All files must be
+          2MB or less and be a JPEG or PDF.
+        </p>
 
-                  return (
-                    <div key={docType.id} className="flex items-center justify-between gap-4 p-4">
-                      <div>
-                        <p className="text-sm font-medium text-[#11203a]">{docType.label}</p>
-                        <span className={`mt-1 inline-flex items-center gap-1.5 text-xs font-medium ${
-                          status === "uploaded" ? "text-green-600" : "text-[#8d95a3]"
-                        }`}>
-                          <span className={`h-1.5 w-1.5 rounded-full ${
-                            status === "uploaded" ? "bg-green-500" : "bg-[#dde1ea]"
-                          }`} />
-                          {status === "uploaded" ? "Uploaded — pending review" : "Not started"}
-                        </span>
-                      </div>
+        <div className="mt-6 divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
+          {documentTypes.map((docType) => {
+            const doc = form.documents?.[docType.id];
+            const status = doc?.status || "not_started";
 
-                      <label className="cursor-pointer shrink-0 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors">
-                        {doc?.url ? "Replace" : "Upload"}
-                        <input
-                          type="file"
-                          accept="image/jpeg,application/pdf"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            if (file.size > 2 * 1024 * 1024) {
-                              alert("File must be 2MB or less.");
-                              return;
-                            }
-                            uploadDocument(docType.id, file);
-                          }}
-                        />
-                      </label>
-                    </div>
-                  );
-                })}
+            return (
+              <div key={docType.id} className="flex items-center justify-between gap-4 p-4">
+                <div>
+                  <p className="text-sm font-medium text-[#11203a]">{docType.label}</p>
+                  <span className={`mt-1 inline-flex items-center gap-1.5 text-xs font-medium ${
+                    status === "uploaded" ? "text-green-600" : "text-[#8d95a3]"
+                  }`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${
+                      status === "uploaded" ? "bg-green-500" : "bg-[#dde1ea]"
+                    }`} />
+                    {status === "uploaded" ? "Uploaded — pending review" : "Not started"}
+                  </span>
+                </div>
+
+                <label className="cursor-pointer shrink-0 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors">
+                  {doc?.url ? "Replace" : "Upload"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 2 * 1024 * 1024) {
+                        alert("File must be 2MB or less.");
+                        return;
+                      }
+                      uploadDocument(docType.id, file);
+                    }}
+                  />
+                </label>
               </div>
-            </div>
-          )}
+            );
+          })}
+        </div>
+      </>
+    ) : (
+      <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-[#dde1ea] bg-[#f7f8fb] py-12 text-center">
+        <svg className="h-10 w-10 text-[#8d95a3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        <p className="mt-4 text-sm font-medium text-[#11203a]">Documents will unlock once you're hired</p>
+        <p className="mt-1 max-w-sm text-sm text-[#5b6472]">
+          Once a chalet company hires you, this section will open up so you can upload your Flight Itinerary, Passport, Police Check, and agreements.
+        </p>
+      </div>
+    )}
+  </div>
+)}
 
           {active === "help" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
