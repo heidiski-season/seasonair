@@ -26,6 +26,11 @@ export default function Header() {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
 
+  // Hide the public site header entirely on the dashboard
+  if (pathname?.startsWith("/dashboard")) {
+    return null;
+  }
+
   return (
     <>
       <div className="w-full bg-red-600 py-2.5 text-center text-sm font-semibold text-white">
