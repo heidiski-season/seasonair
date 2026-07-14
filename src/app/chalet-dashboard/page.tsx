@@ -289,19 +289,29 @@ export default function ChaletDashboardPage() {
                         </div>
                       </div>
                       <div className="mt-5 flex gap-2">
-                        <button
-                          onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
-                          className="flex-1 rounded-full border border-[#dde1ea] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
-                        >
-                          View profile
-                        </button>
-                        <button
-                          onClick={() => markStatus(profile.id, "interested")}
-                          className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
-                        >
-                          <Star className="h-4 w-4" /> Add to review
-                        </button>
-                      </div>
+  <button
+    onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
+    className="flex-1 rounded-full border border-[#dde1ea] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
+  >
+    View profile
+  </button>
+  {bookedSlot ? (
+    
+      href="mailto:yourskiseason@gmail.com?subject=Change interview booking"
+      className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-[#dde1ea] bg-[#f7f8fb] py-2.5 text-sm font-semibold text-[#8d95a3]"
+      title="Email us to change this booking"
+    >
+      🔒 Locked in
+    </a>
+  ) : (
+    <button
+      onClick={() => setBookingFor(profile)}
+      className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+    >
+      <MessageSquare className="h-4 w-4" /> Book a chat
+    </button>
+  )}
+</div>
                     </div>
                   ))}
                 </div>
@@ -462,12 +472,21 @@ export default function ChaletDashboardPage() {
                       >
                         <Star className="h-4 w-4" /> Add to review
                       </button>
-                      <button
-                        onClick={() => setBookingFor(selected)}
-                        className="flex items-center gap-1.5 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-semibold text-[#3fa9e0] hover:bg-[#3fa9e0]/10"
-                      >
-                        <MessageSquare className="h-4 w-4" /> Schedule interview
-                      </button>
+                      {getReviewRow(selected.id)?.booked_slot ? (
+  
+    href="mailto:yourskiseason@gmail.com?subject=Change interview booking"
+    className="flex items-center gap-1.5 rounded-full border border-[#dde1ea] bg-[#f7f8fb] px-4 py-2 text-sm font-semibold text-[#8d95a3]"
+  >
+    🔒 Interview locked in — email us to change
+  </a>
+) : (
+  <button
+    onClick={() => setBookingFor(selected)}
+    className="flex items-center gap-1.5 rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-semibold text-[#3fa9e0] hover:bg-[#3fa9e0]/10"
+  >
+    <MessageSquare className="h-4 w-4" /> Schedule interview
+  </button>
+)}
                       <button
                         onClick={() => toggleWatchlist(selected.id)}
                         className="flex items-center gap-1.5 rounded-full border border-[#dde1ea] px-4 py-2 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
