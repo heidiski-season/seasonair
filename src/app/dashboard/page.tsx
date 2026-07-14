@@ -30,6 +30,9 @@ const documentTypes = [
   { id: "qualification_agreement", label: "Qualification Agreement" },
 ];
 
+const FULL_SEASON_START = "2026-12-01";
+const FULL_SEASON_END = "2027-04-15";
+
 const timeSlotOptions = [
   "09:00", "10:00", "11:00", "12:00", "13:00",
   "14:00", "15:00", "16:00", "17:00", "18:00",
@@ -49,7 +52,7 @@ export default function DashboardPage() {
   const [form, setForm] = useState({
     first_name: "", last_name: "", email: "", phone: "", dob: "", nationality: "",
     emergency_name: "", emergency_relationship: "", emergency_phone: "",
-    start_date: "", end_date: "",
+    start_date: "", end_date: "", full_season: false,
     university: "", degree: "", grad_year: "", other_education: "",
     has_hospitality: "", hospitality_details: "",
     has_driving: "", driving_details: "",
@@ -426,19 +429,57 @@ export default function DashboardPage() {
           )}
 
           {active === "availability" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Availability</h1>
-              <p className="mt-1 text-sm text-[#5b6472]">These are the season dates you're available to work — not your interview times (see "Interview Availability" in the sidebar for that).</p>
-              <div className="mt-6 grid gap-5 sm:grid-cols-2">
-                <div><label className={lc}>Available from</label><input type="date" value={form.start_date} onChange={e => update("start_date", e.target.value)} className={ic} /></div>
-                <div><label className={lc}>Available until</label><input type="date" value={form.end_date} onChange={e => update("end_date", e.target.value)} className={ic} /></div>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
-                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
-              </div>
-            </div>
-          )}
+  <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+    <h1 className="font-display text-2xl font-semibold text-[#11203a]">Availability</h1>
+    <p className="mt-1 text-sm text-[#5b6472]">These are the season dates you're available to work — not your interview times (see "Interview Availability" in the sidebar for that).</p>
+
+    <div className="mt-6 space-y-3">
+      <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
+        form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+      }`}>
+        <input
+          type="checkbox"
+          checked={form.full_season}
+          onChange={() => setForm(f => ({
+            ...f,
+            full_season: true,
+            start_date: FULL_SEASON_START,
+            end_date: FULL_SEASON_END,
+          }))}
+          className="accent-[#3fa9e0]"
+        />
+        <span>
+          <span className="font-medium text-[#11203a]">Full season</span>
+          <span className="block text-xs text-[#8d95a3]">Approx 1 Dec – mid April</span>
+        </span>
+      </label>
+
+      <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
+        !form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+      }`}>
+        <input
+          type="checkbox"
+          checked={!form.full_season}
+          onChange={() => setForm(f => ({ ...f, full_season: false }))}
+          className="accent-[#3fa9e0]"
+        />
+        <span className="font-medium text-[#11203a]">Other — pick my own dates</span>
+      </label>
+    </div>
+
+    {!form.full_season && (
+      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+        <div><label className={lc}>Available from</label><input type="date" value={form.start_date} onChange={e => update("start_date", e.target.value)} className={ic} /></div>
+        <div><label className={lc}>Available until</label><input type="date" value={form.end_date} onChange={e => update("end_date", e.target.value)} className={ic} /></div>
+      </div>
+    )}
+
+    <div className="flex flex-wrap gap-3">
+      <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+      <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+    </div>
+  </div>
+)}
 
           {active === "role" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">

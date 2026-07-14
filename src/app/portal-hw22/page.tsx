@@ -312,8 +312,10 @@ export default function AdminPage() {
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl bg-[#f7f8fb] p-4">
                 <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Season availability</p>
-                <p className="mt-1 text-sm font-medium text-[#11203a]">{selected.start_date || "—"} → {selected.end_date || "—"}</p>
-              </div>
+                <p className="mt-1 text-sm font-medium text-[#11203a]">
+                  {selected.full_season ? "Full season (Dec 1 – mid April)" : `${selected.start_date || "—"} → ${selected.end_date || "—"}`}
+                </p>
+        </div>
               <div className="rounded-xl bg-[#f7f8fb] p-4">
                 <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort preference</p>
                 <p className="mt-1 text-sm font-medium text-[#11203a]">{selected.resort || "No preference"}</p>
