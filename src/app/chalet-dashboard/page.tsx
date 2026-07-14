@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mountain, LogOut, MapPin, Calendar, Briefcase, Search, Star, MessageSquare, Clock } from "lucide-react";
+import {
+  Mountain, LogOut, MapPin, Calendar, Briefcase, Star, MessageSquare,
+  Clock, Heart, Home as HomeIcon, Bookmark, ClipboardList,
+} from "lucide-react";
 
 const tabs = ["Overview", "Skills", "Education", "About You", "Availability"];
 
@@ -15,11 +18,10 @@ export default function ChaletDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("Overview");
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"browse" | "review">("browse");
+  const [nav, setNav] = useState<"home" | "watchlist" | "review">("home");
   const [bookingFor, setBookingFor] = useState<any>(null);
   const router = useRouter();
+  const feedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -51,55 +53,47 @@ export default function ChaletDashboardPage() {
     router.push("/");
   };
 
-  const reviewedIds = reviews.map(r => r.profile_id);
+  const getReviewRow = (profileId: string) => reviews.find(r => r.profile_id === profileId);
+  const watchlistIds = reviews.filter(r => r.status === "watchlist").map(r => r.profile_id);
+  const reviewedIds = reviews.filter(r => r.status === "interested" || r.status === "interview").map(r => r.profile_id);
 
-  const getReviewStatus = (profileId: string) =>
-    reviews.find(r => r.profile_id === profileId)?.status;
-
-  const markStatus = async (profileId: string, status: string) => {
+  const upsertReview = async (profileId: string, status: string, extra: any = {}) => {
     await supabase.from("reviews").upsert({
       chalet_id: user.id,
       profile_id: profileId,
       status,
+      ...extra,
     });
     setReviews(r => {
       const existing = r.find(row => row.profile_id === profileId);
       if (existing) {
-        return r.map(row => row.profile_id === profileId ? { ...row, status } : row);
+        return r.map(row => row.profile_id === profileId ? { ...row, status, ...extra } : row);
       }
-      return [...r, { chalet_id: user.id, profile_id: profileId, status }];
+      return [...r, { chalet_id: user.id, profile_id: profileId, status, ...extra }];
     });
+  };
+
+  const toggleWatchlist = async (profileId: string) => {
+    if (watchlistIds.includes(profileId)) {
+      await supabase.from("reviews").delete().eq("chalet_id", user.id).eq("profile_id", profileId);
+      setReviews(r => r.filter(row => row.profile_id !== profileId));
+    } else {
+      await upsertReview(profileId, "watchlist");
+    }
+  };
+
+  const markStatus = async (profileId: string, status: string) => {
+    await upsertReview(profileId, status);
     setSelected(null);
   };
 
   const bookSlot = async (profileId: string, slot: { date: string; time: string }) => {
-    await supabase.from("reviews").upsert({
-      chalet_id: user.id,
-      profile_id: profileId,
-      status: "interview",
-      booked_slot: slot,
-    });
-    setReviews(r => {
-      const existing = r.find(row => row.profile_id === profileId);
-      if (existing) {
-        return r.map(row => row.profile_id === profileId ? { ...row, status: "interview", booked_slot: slot } : row);
-      }
-      return [...r, { chalet_id: user.id, profile_id: profileId, status: "interview", booked_slot: slot }];
-    });
+    await upsertReview(profileId, "interview", { booked_slot: slot });
     setBookingFor(null);
   };
 
-  const filtered = profiles.filter(p => {
-    const matchesSearch = search === "" ||
-      `${p.first_name} ${p.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
-      (p.resort || "").toLowerCase().includes(search.toLowerCase());
-    const matchesFilter = filter === "all" || (p.roles || []).includes(filter);
-    return matchesSearch && matchesFilter;
-  });
-
+  const watchlistCandidates = profiles.filter(p => watchlistIds.includes(p.id));
   const reviewCandidates = profiles.filter(p => reviewedIds.includes(p.id));
-
-  const roleFilters = ["all", "Chalet Host", "Chalet Chef", "Lift Operator", "Resort Rep", "Ski Tech"];
 
   const age = (dob: string) => {
     if (!dob) return "";
@@ -112,6 +106,11 @@ export default function ChaletDashboardPage() {
       <p className="text-[#5b6472]">Loading candidates...</p>
     </div>
   );
+
+  const navItemClass = (id: string) =>
+    `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+      nav === id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f7f8fb]"
+    }`;
 
   return (
     <div className="min-h-screen bg-[#f7f8fb]">
@@ -131,170 +130,142 @@ export default function ChaletDashboardPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+      <div className="mx-auto flex max-w-7xl gap-8 px-4 py-10 sm:px-6">
 
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="font-display text-3xl font-semibold text-[#11203a]">
-            Find YourSkiSeason
-          </h1>
-          <p className="mt-2 text-[#5b6472]">
-            {profiles.length} available candidates · {reviewedIds.length} on your review list
-          </p>
-        </div>
+        {/* Sidebar */}
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="rounded-2xl border border-[#dde1ea] bg-white p-4">
+            <nav className="space-y-1">
+              <button onClick={() => setNav("home")} className={navItemClass("home")}>
+                <HomeIcon className="h-4 w-4 shrink-0" />
+                Home
+              </button>
+              <button onClick={() => setNav("watchlist")} className={navItemClass("watchlist")}>
+                <Bookmark className="h-4 w-4 shrink-0" />
+                Watchlist ({watchlistIds.length})
+              </button>
+              <button onClick={() => setNav("review")} className={navItemClass("review")}>
+                <ClipboardList className="h-4 w-4 shrink-0" />
+                Review ({reviewedIds.length})
+              </button>
+            </nav>
+          </div>
+        </aside>
 
-        {/* Browse / Review toggle */}
-        <div className="mb-6 flex gap-2">
-          <button
-            onClick={() => setView("browse")}
-            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-              view === "browse" ? "bg-[#3fa9e0] text-white" : "bg-white text-[#5b6472] border border-[#dde1ea]"
-            }`}
-          >
-            Browse
-          </button>
-          <button
-            onClick={() => setView("review")}
-            className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-colors ${
-              view === "review" ? "bg-[#3fa9e0] text-white" : "bg-white text-[#5b6472] border border-[#dde1ea]"
-            }`}
-          >
-            Review ({reviewedIds.length})
-          </button>
-        </div>
+        {/* Main */}
+        <main className="flex-1">
 
-        {view === "browse" && (
-          <>
-            {/* Search + filters */}
-            <div className="mb-6 flex flex-wrap gap-4">
-              <div className="relative w-full sm:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8d95a3]" />
-                <input
-                  type="text"
-                  placeholder="Search by name or resort..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full rounded-xl border border-[#dde1ea] bg-white pl-10 pr-4 py-2.5 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none"
-                />
+          {nav === "home" && (
+            <div>
+              <div className="mb-4">
+                <h1 className="font-display text-2xl font-semibold text-[#11203a]">Discover</h1>
+                <p className="mt-1 text-sm text-[#5b6472]">Scroll to see all {profiles.length} candidates. Tap the heart to save to your watchlist.</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {roleFilters.map(f => (
-                  <button
-                    key={f}
-                    onClick={() => setFilter(f)}
-                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filter === f
-                      ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]"
-                      : "border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
-                  >
-                    {f === "all" ? "All roles" : f}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {/* Profile cards grid */}
-            {filtered.length === 0 ? (
-              <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
-                <p className="text-[#5b6472]">No candidates match your search.</p>
-              </div>
-            ) : (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map(profile => (
-                  <div key={profile.id} className={`rounded-2xl border bg-white p-6 transition-all ${reviewedIds.includes(profile.id) ? "border-[#3fa9e0] ring-2 ring-[#3fa9e0]/20" : "border-[#dde1ea] hover:border-[#3fa9e0] hover:shadow-lg"}`}>
-
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
-                        {profile.first_name?.[0]}{profile.last_name?.[0]}
-                      </div>
-                      <div>
-                        <h3 className="font-display font-semibold text-[#11203a]">
-                          {profile.first_name} {profile.last_name}
-                        </h3>
-                        <p className="text-xs text-[#8d95a3]">
-                          {age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}
-                        </p>
-                      </div>
-                      {reviewedIds.includes(profile.id) && (
-                        <span className="ml-auto rounded-full bg-[#3fa9e0]/10 px-2.5 py-1 font-mono text-[10px] uppercase text-[#3fa9e0]">
-                          On review
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="mt-4 space-y-2 text-sm text-[#5b6472]">
-                      {profile.resort && (
-                        <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[#3fa9e0]" />{profile.resort}</div>
-                      )}
-                      {profile.start_date && (
-                        <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[#3fa9e0]" />{profile.start_date} → {profile.end_date}</div>
-                      )}
-                      {profile.roles?.length > 0 && (
-                        <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[#3fa9e0]" />{profile.roles.slice(0, 2).join(", ")}</div>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
-                      className="mt-5 w-full rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+              {profiles.length === 0 ? (
+                <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                  <p className="text-[#5b6472]">No candidates available yet.</p>
+                </div>
+              ) : (
+                <div
+                  ref={feedRef}
+                  className="h-[calc(100vh-220px)] max-w-md mx-auto overflow-y-scroll snap-y snap-mandatory rounded-3xl border border-[#dde1ea] bg-black shadow-xl"
+                >
+                  {profiles.map(profile => (
+                    <div
+                      key={profile.id}
+                      className="relative h-[calc(100vh-220px)] w-full snap-start snap-always overflow-hidden"
                     >
-                      View profile
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+                      {/* Background photo or gradient fallback */}
+                      {profile.photo_url ? (
+                        <img
+                          src={profile.photo_url}
+                          alt={profile.first_name}
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#3fa9e0] to-[#11203a]">
+                          <span className="font-display text-6xl font-semibold text-white/80">
+                            {profile.first_name?.[0]}{profile.last_name?.[0]}
+                          </span>
+                        </div>
+                      )}
 
-        {view === "review" && (
-          <>
-            {reviewCandidates.length === 0 ? (
-              <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
-                <p className="text-[#5b6472]">You haven't added anyone to review yet. Browse candidates and click "Add to review."</p>
-              </div>
-            ) : (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {reviewCandidates.map(profile => {
-                  const status = getReviewStatus(profile.id);
-                  const bookedSlot = reviews.find(r => r.profile_id === profile.id)?.booked_slot;
+                      {/* Gradient overlay for text legibility */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
 
-                  return (
-                    <div key={profile.id} className="rounded-2xl border border-[#3fa9e0] ring-2 ring-[#3fa9e0]/20 bg-white p-6">
+                      {/* Heart / watchlist button */}
+                      <button
+                        onClick={() => toggleWatchlist(profile.id)}
+                        className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm transition-colors hover:bg-black/60"
+                      >
+                        <Heart
+                          className={`h-6 w-6 ${watchlistIds.includes(profile.id) ? "fill-red-500 text-red-500" : "text-white"}`}
+                        />
+                      </button>
+
+                      {/* Info block, tap to open full profile */}
+                      <button
+                        onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
+                        className="absolute inset-x-0 bottom-0 p-6 text-left"
+                      >
+                        <h2 className="font-display text-2xl font-semibold text-white">
+                          {profile.first_name} {profile.last_name}
+                          {age(profile.dob) && <span className="ml-2 font-normal text-white/80">{age(profile.dob)}</span>}
+                        </h2>
+                        <p className="mt-1 text-sm text-white/70">{profile.nationality}</p>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {profile.roles?.slice(0, 3).map((r: string) => (
+                            <span key={r} className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                              {r}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="mt-3 flex items-center gap-4 text-xs text-white/70">
+                          {profile.resort && (
+                            <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{profile.resort}</span>
+                          )}
+                          {profile.full_season ? (
+                            <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />Full season</span>
+                          ) : profile.start_date && (
+                            <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{profile.start_date}</span>
+                          )}
+                        </div>
+
+                        <p className="mt-3 text-xs font-medium text-white/60">Tap to view full profile →</p>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {nav === "watchlist" && (
+            <div>
+              <div className="mb-6">
+                <h1 className="font-display text-2xl font-semibold text-[#11203a]">Watchlist</h1>
+                <p className="mt-1 text-sm text-[#5b6472]">Candidates you've saved but haven't added to review yet.</p>
+              </div>
+              {watchlistCandidates.length === 0 ? (
+                <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                  <p className="text-[#5b6472]">Nothing here yet — tap the heart on Home to save candidates.</p>
+                </div>
+              ) : (
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {watchlistCandidates.map(profile => (
+                    <div key={profile.id} className="rounded-2xl border border-[#dde1ea] bg-white p-6">
                       <div className="flex items-center gap-3">
                         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
                           {profile.first_name?.[0]}{profile.last_name?.[0]}
                         </div>
                         <div>
-                          <h3 className="font-display font-semibold text-[#11203a]">
-                            {profile.first_name} {profile.last_name}
-                          </h3>
-                          <p className="text-xs text-[#8d95a3]">
-                            {age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}
-                          </p>
+                          <h3 className="font-display font-semibold text-[#11203a]">{profile.first_name} {profile.last_name}</h3>
+                          <p className="text-xs text-[#8d95a3]">{age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}</p>
                         </div>
-                        <span className={`ml-auto rounded-full px-2.5 py-1 font-mono text-[10px] uppercase ${
-                          status === "interview" ? "bg-blue-100 text-blue-700" : "bg-[#3fa9e0]/10 text-[#3fa9e0]"
-                        }`}>
-                          {status === "interview" ? "Interview booked" : "On review"}
-                        </span>
                       </div>
-
-                      {bookedSlot ? (
-                        <div className="mt-4 rounded-xl bg-blue-50 p-3 text-sm text-blue-700">
-                          <span className="font-medium">Booked:</span>{" "}
-                          {new Date(bookedSlot.date + "T00:00").toLocaleDateString("en-GB", {
-                            weekday: "short", day: "numeric", month: "short",
-                          })}{" "}
-                          at {bookedSlot.time}
-                        </div>
-                      ) : (
-                        <div className="mt-4 space-y-2 text-sm text-[#5b6472]">
-                          {profile.roles?.length > 0 && (
-                            <div className="flex items-center gap-2"><Briefcase className="h-4 w-4 text-[#3fa9e0]" />{profile.roles.slice(0, 2).join(", ")}</div>
-                          )}
-                        </div>
-                      )}
-
                       <div className="mt-5 flex gap-2">
                         <button
                           onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
@@ -303,22 +274,92 @@ export default function ChaletDashboardPage() {
                           View profile
                         </button>
                         <button
-                          onClick={() => setBookingFor(profile)}
+                          onClick={() => markStatus(profile.id, "interested")}
                           className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
                         >
-                          <MessageSquare className="h-4 w-4" /> Book a chat
+                          <Star className="h-4 w-4" /> Add to review
                         </button>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {nav === "review" && (
+            <div>
+              <div className="mb-6">
+                <h1 className="font-display text-2xl font-semibold text-[#11203a]">Review</h1>
+                <p className="mt-1 text-sm text-[#5b6472]">Candidates you're seriously interested in.</p>
               </div>
-            )}
-          </>
-        )}
+              {reviewCandidates.length === 0 ? (
+                <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                  <p className="text-[#5b6472]">You haven't added anyone to review yet.</p>
+                </div>
+              ) : (
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {reviewCandidates.map(profile => {
+                    const row = getReviewRow(profile.id);
+                    const bookedSlot = row?.booked_slot;
+
+                    return (
+                      <div key={profile.id} className="rounded-2xl border border-[#3fa9e0] ring-2 ring-[#3fa9e0]/20 bg-white p-6">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
+                            {profile.first_name?.[0]}{profile.last_name?.[0]}
+                          </div>
+                          <div>
+                            <h3 className="font-display font-semibold text-[#11203a]">{profile.first_name} {profile.last_name}</h3>
+                            <p className="text-xs text-[#8d95a3]">{age(profile.dob) && `${age(profile.dob)} · `}{profile.nationality}</p>
+                          </div>
+                          <span className={`ml-auto rounded-full px-2.5 py-1 font-mono text-[10px] uppercase ${
+                            row?.status === "interview" ? "bg-blue-100 text-blue-700" : "bg-[#3fa9e0]/10 text-[#3fa9e0]"
+                          }`}>
+                            {row?.status === "interview" ? "Interview booked" : "On review"}
+                          </span>
+                        </div>
+
+                        {bookedSlot ? (
+                          <div className="mt-4 rounded-xl bg-blue-50 p-3 text-sm text-blue-700">
+                            <span className="font-medium">Booked:</span>{" "}
+                            {new Date(bookedSlot.date + "T00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}{" "}
+                            at {bookedSlot.time}
+                          </div>
+                        ) : (
+                          profile.roles?.length > 0 && (
+                            <div className="mt-4 flex items-center gap-2 text-sm text-[#5b6472]">
+                              <Briefcase className="h-4 w-4 text-[#3fa9e0]" />{profile.roles.slice(0, 2).join(", ")}
+                            </div>
+                          )
+                        )}
+
+                        <div className="mt-5 flex gap-2">
+                          <button
+                            onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
+                            className="flex-1 rounded-full border border-[#dde1ea] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
+                          >
+                            View profile
+                          </button>
+                          <button
+                            onClick={() => setBookingFor(profile)}
+                            className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-[#3fa9e0] py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+                          >
+                            <MessageSquare className="h-4 w-4" /> Book a chat
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+        </main>
       </div>
 
-      {/* Book a chat modal — shows the candidate's submitted interview availability */}
+      {/* Book a chat modal */}
       {bookingFor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8" onClick={() => setBookingFor(null)}>
           <div className="w-full max-w-lg rounded-2xl bg-white p-6" onClick={e => e.stopPropagation()}>
@@ -353,9 +394,7 @@ export default function ChaletDashboardPage() {
                   .map(([date, times]) => (
                     <div key={date} className="rounded-xl border border-[#dde1ea] p-4">
                       <p className="text-sm font-semibold text-[#11203a]">
-                        {new Date(date + "T00:00").toLocaleDateString("en-GB", {
-                          weekday: "long", day: "numeric", month: "long",
-                        })}
+                        {new Date(date + "T00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {times.sort().map(time => (
@@ -381,7 +420,6 @@ export default function ChaletDashboardPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8" onClick={() => setSelected(null)}>
           <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white flex flex-col" onClick={e => e.stopPropagation()}>
 
-            {/* Header with photo + actions */}
             <div className="border-b border-[#dde1ea] p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
@@ -408,6 +446,13 @@ export default function ChaletDashboardPage() {
                       >
                         <MessageSquare className="h-4 w-4" /> Schedule interview
                       </button>
+                      <button
+                        onClick={() => toggleWatchlist(selected.id)}
+                        className="flex items-center gap-1.5 rounded-full border border-[#dde1ea] px-4 py-2 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
+                      >
+                        <Heart className={`h-4 w-4 ${watchlistIds.includes(selected.id) ? "fill-red-500 text-red-500" : ""}`} />
+                        {watchlistIds.includes(selected.id) ? "Saved" : "Watchlist"}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -415,10 +460,7 @@ export default function ChaletDashboardPage() {
               </div>
             </div>
 
-            {/* Body with sidebar tabs */}
             <div className="flex flex-1 overflow-hidden">
-
-              {/* Tab sidebar */}
               <div className="w-48 shrink-0 border-r border-[#dde1ea] bg-[#f7f8fb] p-3">
                 {tabs.map(tab => (
                   <button
@@ -431,7 +473,6 @@ export default function ChaletDashboardPage() {
                 ))}
               </div>
 
-              {/* Tab content */}
               <div className="flex-1 overflow-y-auto p-6">
 
                 {activeTab === "Overview" && (
@@ -439,7 +480,9 @@ export default function ChaletDashboardPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="rounded-xl bg-[#f7f8fb] p-4">
                         <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Available</p>
-                        <p className="mt-1 font-medium text-[#11203a]">{selected.start_date} → {selected.end_date}</p>
+                        <p className="mt-1 font-medium text-[#11203a]">
+                          {selected.full_season ? "Full season (Dec 1 – mid April)" : `${selected.start_date} → ${selected.end_date}`}
+                        </p>
                       </div>
                       <div className="rounded-xl bg-[#f7f8fb] p-4">
                         <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort preference</p>
@@ -505,8 +548,14 @@ export default function ChaletDashboardPage() {
 
                 {activeTab === "Availability" && (
                   <div className="space-y-3 text-sm">
-                    <p className="text-[#5b6472]"><span className="font-medium text-[#11203a]">From:</span> {selected.start_date}</p>
-                    <p className="text-[#5b6472]"><span className="font-medium text-[#11203a]">Until:</span> {selected.end_date}</p>
+                    {selected.full_season ? (
+                      <p className="text-[#5b6472]"><span className="font-medium text-[#11203a]">Full season:</span> Approx 1 Dec – mid April</p>
+                    ) : (
+                      <>
+                        <p className="text-[#5b6472]"><span className="font-medium text-[#11203a]">From:</span> {selected.start_date}</p>
+                        <p className="text-[#5b6472]"><span className="font-medium text-[#11203a]">Until:</span> {selected.end_date}</p>
+                      </>
+                    )}
                   </div>
                 )}
 
