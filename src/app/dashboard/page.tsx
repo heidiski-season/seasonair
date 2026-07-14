@@ -30,13 +30,13 @@ const documentTypes = [
   { id: "qualification_agreement", label: "Qualification Agreement" },
 ];
 
-const FULL_SEASON_START = "2026-12-01";
-const FULL_SEASON_END = "2027-04-15";
-
 const timeSlotOptions = [
   "09:00", "10:00", "11:00", "12:00", "13:00",
   "14:00", "15:00", "16:00", "17:00", "18:00",
 ];
+
+const FULL_SEASON_START = "2026-12-01";
+const FULL_SEASON_END = "2027-04-15";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -53,13 +53,16 @@ export default function DashboardPage() {
     first_name: "", last_name: "", email: "", phone: "", dob: "", nationality: "",
     emergency_name: "", emergency_relationship: "", emergency_phone: "",
     start_date: "", end_date: "", full_season: false,
-    university: "", degree: "", grad_year: "", other_education: "",
+    university: "", degree: "", grad_year: "", other_education: "", has_degree: "",
     has_hospitality: "", hospitality_details: "",
     has_driving: "", driving_details: "",
     has_language: "", language_details: "",
+    has_ski_experience: "", ski_seasons_count: "", ski_experience_details: "",
+    cooking_quals_details: "", food_photos_link: "",
     skills: "", roles: [] as string[],
     resort: "", why_season: "", motivation: "",
-    video_url: "", photo_url: "",
+    video_url: "", photo_url: "", cv_url: "",
+    right_to_work: "", social_media_link: "",
     documents: {} as Record<string, { url: string; status: string }>,
     interview_availability: [] as { date: string; time: string }[],
   });
@@ -105,7 +108,6 @@ export default function DashboardPage() {
     setSaving(false);
   };
 
-  // Moves to the next Profile section in order, or back to Home if this was the last one
   const goToNextSection = () => {
     const order = profileSections.map(s => s.id);
     const idx = order.indexOf(active);
@@ -131,6 +133,19 @@ export default function DashboardPage() {
     await supabase.from("profiles").upsert({ id: user.id, ...form, documents: updatedDocs });
   };
 
+  const uploadCV = async (file: File) => {
+    if (file.size > 3 * 1024 * 1024) {
+      alert("CV must be 3MB or less.");
+      return;
+    }
+    const fileName = `${user.id}-cv-${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from("documents").upload(fileName, file);
+    if (error) { alert("Upload failed: " + error.message); return; }
+    const { data } = supabase.storage.from("documents").getPublicUrl(fileName);
+    update("cv_url", data.publicUrl);
+    await supabase.from("profiles").upsert({ id: user.id, ...form, cv_url: data.publicUrl });
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/");
@@ -140,7 +155,7 @@ export default function DashboardPage() {
     if (s.id === "basic") return form.first_name && form.last_name && form.email && form.dob && form.nationality && form.photo_url;
     if (s.id === "emergency") return form.emergency_name && form.emergency_phone;
     if (s.id === "availability") return form.start_date && form.end_date;
-    if (s.id === "education") return form.university && form.degree && form.grad_year;
+    if (s.id === "education") return form.has_degree === "No" || (form.university && form.degree && form.grad_year);
     if (s.id === "skills") return form.skills && form.has_driving && form.has_language;
     if (s.id === "role") return form.roles.length > 0;
     if (s.id === "motivation") return form.why_season && form.motivation;
@@ -152,6 +167,8 @@ export default function DashboardPage() {
   const lc = "mb-1.5 block text-sm font-medium text-[#11203a]";
   const saveBtn = "mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors";
   const continueBtn = "mt-6 rounded-full border border-[#3fa9e0] px-8 py-3 font-semibold text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors";
+  const yesNoBtn = (active: boolean) =>
+    `rounded-xl border px-6 py-2.5 text-sm font-medium transition-colors ${active ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#dde1ea] text-[#5b6472]"}`;
 
   const roles = ["Chalet Host", "Driver", "Cleaner", "Chef"];
 
@@ -405,6 +422,38 @@ export default function DashboardPage() {
                 <div><label className={lc}>Nationality *</label><input type="text" value={form.nationality} onChange={e => update("nationality", e.target.value)} className={ic} /></div>
               </div>
 
+              <div className="mt-5">
+                <label className={lc}>Do you have the right to work in your chosen resort's country?</label>
+                <div className="flex gap-3 mt-1">
+                  {["Yes", "No", "Need a visa/permit"].map(opt => (
+                    <button key={opt} onClick={() => update("right_to_work", opt)} className={yesNoBtn(form.right_to_work === opt)}>{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CV upload — visible to chalet companies */}
+              <div className="mt-6 border-t border-[#dde1ea] pt-6">
+                <label className={lc}>CV / Resume</label>
+                <p className="mb-2 text-xs text-[#8d95a3]">Optional, but recommended — chalet companies can view this alongside your profile. PDF or JPEG, 3MB max.</p>
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer rounded-full border border-[#3fa9e0] px-4 py-2 text-sm font-medium text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors">
+                    {form.cv_url ? "Replace CV" : "Upload CV"}
+                    <input
+                      type="file"
+                      accept="application/pdf,image/jpeg"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadCV(file);
+                      }}
+                    />
+                  </label>
+                  {form.cv_url && (
+                    <a href={form.cv_url} target="_blank" className="text-sm text-[#3fa9e0] underline">View current CV →</a>
+                  )}
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-3">
                 <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
                 <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
@@ -429,57 +478,52 @@ export default function DashboardPage() {
           )}
 
           {active === "availability" && (
-  <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
-    <h1 className="font-display text-2xl font-semibold text-[#11203a]">Availability</h1>
-    <p className="mt-1 text-sm text-[#5b6472]">These are the season dates you're available to work — not your interview times (see "Interview Availability" in the sidebar for that).</p>
+            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+              <h1 className="font-display text-2xl font-semibold text-[#11203a]">Availability</h1>
+              <p className="mt-1 text-sm text-[#5b6472]">These are the season dates you're available to work — not your interview times (see "Interview Availability" in the sidebar for that).</p>
 
-    <div className="mt-6 space-y-3">
-      <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
-        form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
-      }`}>
-        <input
-          type="checkbox"
-          checked={form.full_season}
-          onChange={() => setForm(f => ({
-            ...f,
-            full_season: true,
-            start_date: FULL_SEASON_START,
-            end_date: FULL_SEASON_END,
-          }))}
-          className="accent-[#3fa9e0]"
-        />
-        <span>
-          <span className="font-medium text-[#11203a]">Full season</span>
-          <span className="block text-xs text-[#8d95a3]">Approx 1 Dec – mid April</span>
-        </span>
-      </label>
+              <div className="mt-6 space-y-3">
+                <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
+                  form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={form.full_season}
+                    onChange={() => setForm(f => ({ ...f, full_season: true, start_date: FULL_SEASON_START, end_date: FULL_SEASON_END }))}
+                    className="accent-[#3fa9e0]"
+                  />
+                  <span>
+                    <span className="font-medium text-[#11203a]">Full season</span>
+                    <span className="block text-xs text-[#8d95a3]">Approx 1 Dec – mid April</span>
+                  </span>
+                </label>
 
-      <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
-        !form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
-      }`}>
-        <input
-          type="checkbox"
-          checked={!form.full_season}
-          onChange={() => setForm(f => ({ ...f, full_season: false }))}
-          className="accent-[#3fa9e0]"
-        />
-        <span className="font-medium text-[#11203a]">Other — pick my own dates</span>
-      </label>
-    </div>
+                <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
+                  !form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={!form.full_season}
+                    onChange={() => setForm(f => ({ ...f, full_season: false }))}
+                    className="accent-[#3fa9e0]"
+                  />
+                  <span className="font-medium text-[#11203a]">Other — pick my own dates</span>
+                </label>
+              </div>
 
-    {!form.full_season && (
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">
-        <div><label className={lc}>Available from</label><input type="date" value={form.start_date} onChange={e => update("start_date", e.target.value)} className={ic} /></div>
-        <div><label className={lc}>Available until</label><input type="date" value={form.end_date} onChange={e => update("end_date", e.target.value)} className={ic} /></div>
-      </div>
-    )}
+              {!form.full_season && (
+                <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                  <div><label className={lc}>Available from</label><input type="date" value={form.start_date} onChange={e => update("start_date", e.target.value)} className={ic} /></div>
+                  <div><label className={lc}>Available until</label><input type="date" value={form.end_date} onChange={e => update("end_date", e.target.value)} className={ic} /></div>
+                </div>
+              )}
 
-    <div className="flex flex-wrap gap-3">
-      <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
-      <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
-    </div>
-  </div>
-)}
+              <div className="flex flex-wrap gap-3">
+                <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
+                <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
+              </div>
+            </div>
+          )}
 
           {active === "role" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
@@ -511,6 +555,11 @@ export default function DashboardPage() {
                   <label className={lc}>Anything else you'd like us to know?</label>
                   <textarea rows={4} value={form.motivation} onChange={e => update("motivation", e.target.value)} className={ic} />
                 </div>
+                <div>
+                  <label className={lc}>Social media link (optional)</label>
+                  <p className="mb-2 text-xs text-[#8d95a3]">Instagram, TikTok, or similar — a nice way for chalet companies to get to know you.</p>
+                  <input type="url" placeholder="https://instagram.com/..." value={form.social_media_link} onChange={e => update("social_media_link", e.target.value)} className={ic} />
+                </div>
               </div>
               <div className="flex flex-wrap gap-3">
                 <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
@@ -522,22 +571,71 @@ export default function DashboardPage() {
           {active === "skills" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Skills & Experience</h1>
-              <div className="mt-6 space-y-5">
+              <div className="mt-6 space-y-6">
                 <div><label className={lc}>Any relevant experience</label><textarea rows={4} value={form.skills} onChange={e => update("skills", e.target.value)} className={ic} /></div>
+
+                {/* Ski season experience */}
+                <div>
+                  <label className={lc}>Have you done a ski season before?</label>
+                  <div className="flex gap-3 mt-1">
+                    {["Yes", "No"].map(opt => (
+                      <button key={opt} onClick={() => update("has_ski_experience", opt)} className={yesNoBtn(form.has_ski_experience === opt)}>{opt}</button>
+                    ))}
+                  </div>
+                  {form.has_ski_experience === "Yes" && (
+                    <div className="mt-3 space-y-3">
+                      <input
+                        type="text"
+                        placeholder="How many seasons?"
+                        value={form.ski_seasons_count}
+                        onChange={e => update("ski_seasons_count", e.target.value)}
+                        className={ic}
+                      />
+                      <textarea
+                        rows={3}
+                        placeholder="Which resorts, what roles, and when?"
+                        value={form.ski_experience_details}
+                        onChange={e => update("ski_experience_details", e.target.value)}
+                        className={ic}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <div><label className={lc}>Driving licence?</label>
                   <div className="flex gap-3 mt-1">
                     {["Yes", "No"].map(opt => (
-                      <button key={opt} onClick={() => update("has_driving", opt)} className={`rounded-xl border px-6 py-2.5 text-sm font-medium transition-colors ${form.has_driving === opt ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#dde1ea] text-[#5b6472]"}`}>{opt}</button>
+                      <button key={opt} onClick={() => update("has_driving", opt)} className={yesNoBtn(form.has_driving === opt)}>{opt}</button>
                     ))}
                   </div>
                 </div>
                 <div><label className={lc}>Languages other than English?</label>
                   <div className="flex gap-3 mt-1">
                     {["Yes", "No"].map(opt => (
-                      <button key={opt} onClick={() => update("has_language", opt)} className={`rounded-xl border px-6 py-2.5 text-sm font-medium transition-colors ${form.has_language === opt ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#dde1ea] text-[#5b6472]"}`}>{opt}</button>
+                      <button key={opt} onClick={() => update("has_language", opt)} className={yesNoBtn(form.has_language === opt)}>{opt}</button>
                     ))}
                   </div>
                   {form.has_language === "Yes" && <input type="text" placeholder="e.g. French (intermediate)" value={form.language_details} onChange={e => update("language_details", e.target.value)} className={`${ic} mt-3`} />}
+                </div>
+
+                {/* Cooking / food — optional */}
+                <div className="border-t border-[#dde1ea] pt-5">
+                  <label className={lc}>Cooking qualifications, food photos, or dinner parties you've hosted</label>
+                  <p className="mb-2 text-xs text-[#8d95a3]">Optional — but recommended, especially for chalet host or chef roles.</p>
+                  <textarea
+                    rows={3}
+                    placeholder="e.g. Level 2 Food Hygiene, hosted dinner for 8 friends monthly, worked in a café kitchen..."
+                    value={form.cooking_quals_details}
+                    onChange={e => update("cooking_quals_details", e.target.value)}
+                    className={ic}
+                  />
+                  <input
+                    type="url"
+                    placeholder="Link to food photos (Instagram, Google Photos, etc.)"
+                    value={form.food_photos_link}
+                    onChange={e => update("food_photos_link", e.target.value)}
+                    className={`${ic} mt-3`}
+                  />
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -550,12 +648,32 @@ export default function DashboardPage() {
           {active === "education" && (
             <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Education</h1>
-              <div className="mt-6 space-y-5">
-                <div><label className={lc}>University name</label><input type="text" value={form.university} onChange={e => update("university", e.target.value)} className={ic} /></div>
-                <div><label className={lc}>Degree / Subject</label><input type="text" value={form.degree} onChange={e => update("degree", e.target.value)} className={ic} /></div>
-                <div><label className={lc}>Graduation year</label><input type="text" value={form.grad_year} onChange={e => update("grad_year", e.target.value)} className={ic} /></div>
-                <div><label className={lc}>Other qualifications</label><textarea rows={3} value={form.other_education} onChange={e => update("other_education", e.target.value)} className={ic} /></div>
+
+              <div className="mt-6">
+                <label className={lc}>Do you have a degree?</label>
+                <div className="flex gap-3 mt-1">
+                  {["Yes", "No"].map(opt => (
+                    <button key={opt} onClick={() => update("has_degree", opt)} className={yesNoBtn(form.has_degree === opt)}>{opt}</button>
+                  ))}
+                </div>
               </div>
+
+              {form.has_degree === "Yes" && (
+                <div className="mt-5 space-y-5">
+                  <div><label className={lc}>University name</label><input type="text" value={form.university} onChange={e => update("university", e.target.value)} className={ic} /></div>
+                  <div><label className={lc}>Degree / Subject</label><input type="text" value={form.degree} onChange={e => update("degree", e.target.value)} className={ic} /></div>
+                  <div><label className={lc}>Graduation year</label><input type="text" value={form.grad_year} onChange={e => update("grad_year", e.target.value)} className={ic} /></div>
+                  <div><label className={lc}>Other qualifications</label><textarea rows={3} value={form.other_education} onChange={e => update("other_education", e.target.value)} className={ic} /></div>
+                </div>
+              )}
+
+              {form.has_degree === "No" && (
+                <div className="mt-5">
+                  <label className={lc}>Any other qualifications?</label>
+                  <textarea rows={3} value={form.other_education} onChange={e => update("other_education", e.target.value)} className={ic} />
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-3">
                 <button onClick={saveProfile} className={saveBtn}>{saving ? "Saving..." : saved ? "Saved ✓" : "Save"}</button>
                 <button onClick={saveAndContinue} className={continueBtn}>Save and continue →</button>
