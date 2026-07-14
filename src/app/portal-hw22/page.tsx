@@ -12,11 +12,14 @@ export default function AdminPage() {
   const [user, setUser] = useState<any>(null);
   const [chalets, setChalets] = useState<any[]>([]);
   const [YourSkiSeasons, setYourSkiSeasons] = useState<any[]>([]);
-  const [tab, setTab] = useState<"chalets" | "YourSkiSeasons">("chalets");
+  const [connections, setConnections] = useState<any[]>([]);
+  const [tab, setTab] = useState<"chalets" | "YourSkiSeasons" | "connections">("chalets");
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<any>(null);
   const [notesDraft, setNotesDraft] = useState("");
   const [savingNotes, setSavingNotes] = useState(false);
+  const [editingConnection, setEditingConnection] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<{ status: string; date: string; time: string }>({ status: "", date: "", time: "" });
   const router = useRouter();
 
   useEffect(() => {
@@ -38,8 +41,13 @@ export default function AdminPage() {
         .select("*")
         .order("created_at", { ascending: false });
 
+      const { data: connections } = await supabase
+        .from("reviews")
+        .select("*");
+
       setChalets(chalets || []);
       setYourSkiSeasons(YourSkiSeasons || []);
+      setConnections(connections || []);
       setLoading(false);
     };
     getData();
@@ -94,6 +102,49 @@ export default function AdminPage() {
     setSavingNotes(false);
   };
 
+  const connectionKey = (c: any) => `${c.chalet_id}-${c.profile_id}`;
+
+  const startEditingConnection = (c: any) => {
+    setEditingConnection(connectionKey(c));
+    setEditDraft({
+      status: c.status || "watchlist",
+      date: c.booked_slot?.date || "",
+      time: c.booked_slot?.time || "",
+    });
+  };
+
+  const saveConnection = async (c: any) => {
+    const updates: any = { status: editDraft.status };
+    if (editDraft.date && editDraft.time) {
+      updates.booked_slot = { date: editDraft.date, time: editDraft.time };
+    } else if (editDraft.status !== "interview") {
+      updates.booked_slot = null;
+    }
+
+    await supabase
+      .from("reviews")
+      .update(updates)
+      .eq("chalet_id", c.chalet_id)
+      .eq("profile_id", c.profile_id);
+
+    setConnections(conns => conns.map(row =>
+      row.chalet_id === c.chalet_id && row.profile_id === c.profile_id
+        ? { ...row, ...updates }
+        : row
+    ));
+    setEditingConnection(null);
+  };
+
+  const deleteConnection = async (c: any) => {
+    if (!confirm("Remove this connection entirely?")) return;
+    await supabase
+      .from("reviews")
+      .delete()
+      .eq("chalet_id", c.chalet_id)
+      .eq("profile_id", c.profile_id);
+    setConnections(conns => conns.filter(row => !(row.chalet_id === c.chalet_id && row.profile_id === c.profile_id)));
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/");
@@ -103,6 +154,16 @@ export default function AdminPage() {
     if (!dob) return "";
     const diff = Date.now() - new Date(dob).getTime();
     return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+  };
+
+  const statusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      watchlist: "bg-purple-100 text-purple-700",
+      interested: "bg-[#3fa9e0]/10 text-[#3fa9e0]",
+      interview: "bg-blue-100 text-blue-700",
+      pass: "bg-gray-100 text-gray-500",
+    };
+    return styles[status] || "bg-yellow-100 text-yellow-700";
   };
 
   if (loading) return (
@@ -134,7 +195,7 @@ export default function AdminPage() {
             { label: "Total YourSkiSeasons", value: YourSkiSeasons.length },
             { label: "Approved YourSkiSeasons", value: YourSkiSeasons.filter(s => s.approved).length },
             { label: "Chalet companies", value: chalets.length },
-            { label: "Pending approval", value: chalets.filter(c => !c.approved).length },
+            { label: "Active connections", value: connections.length },
           ].map(stat => (
             <div key={stat.label} className="rounded-2xl border border-[#dde1ea] bg-white p-5 text-center">
               <p className="font-display text-3xl font-semibold text-[#11203a]">{stat.value}</p>
@@ -144,7 +205,7 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           <button
             onClick={() => setTab("chalets")}
             className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "chalets" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
@@ -156,6 +217,12 @@ export default function AdminPage() {
             className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "YourSkiSeasons" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
           >
             YourSkiSeasons ({YourSkiSeasons.length})
+          </button>
+          <button
+            onClick={() => setTab("connections")}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "connections" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+          >
+            Connections ({connections.length})
           </button>
         </div>
 
@@ -284,6 +351,129 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* Connections table */}
+        {tab === "connections" && (
+          <div className="rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="border-b border-[#dde1ea] bg-[#f7f8fb]">
+                <tr>
+                  <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Seasonaire</th>
+                  <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Chalet company</th>
+                  <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Status</th>
+                  <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Interview slot</th>
+                  <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#dde1ea]">
+                {connections.length === 0 && (
+                  <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No connections yet — nothing has happened between a chalet and a seasonaire.</td></tr>
+                )}
+                {connections.map(c => {
+                  const profile = YourSkiSeasons.find(p => p.id === c.profile_id);
+                  const chalet = chalets.find(ch => ch.id === c.chalet_id);
+                  const isEditing = editingConnection === connectionKey(c);
+
+                  return (
+                    <tr key={connectionKey(c)} className="hover:bg-[#f7f8fb] align-top">
+                      <td className="px-6 py-4">
+                        {profile ? (
+                          <button onClick={() => openProfile(profile)} className="text-left hover:underline">
+                            <p className="font-medium text-[#11203a]">{profile.first_name} {profile.last_name}</p>
+                            <p className="text-xs text-[#8d95a3]">{profile.email}</p>
+                          </button>
+                        ) : <span className="text-[#8d95a3]">Unknown / deleted</span>}
+                      </td>
+                      <td className="px-6 py-4">
+                        {chalet ? (
+                          <>
+                            <p className="font-medium text-[#11203a]">{chalet.company_name}</p>
+                            <p className="text-xs text-[#8d95a3]">{chalet.email}</p>
+                          </>
+                        ) : <span className="text-[#8d95a3]">Unknown / deleted</span>}
+                      </td>
+                      <td className="px-6 py-4">
+                        {isEditing ? (
+                          <select
+                            value={editDraft.status}
+                            onChange={e => setEditDraft(d => ({ ...d, status: e.target.value }))}
+                            className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                          >
+                            <option value="watchlist">Watchlist</option>
+                            <option value="interested">On review</option>
+                            <option value="interview">Interview booked</option>
+                            <option value="pass">Passed</option>
+                          </select>
+                        ) : (
+                          <span className={`rounded-full px-3 py-1 font-mono text-xs uppercase tracking-wide ${statusBadge(c.status)}`}>
+                            {c.status}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {isEditing ? (
+                          <div className="flex flex-col gap-1.5">
+                            <input
+                              type="date"
+                              value={editDraft.date}
+                              onChange={e => setEditDraft(d => ({ ...d, date: e.target.value }))}
+                              className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                            />
+                            <input
+                              type="time"
+                              value={editDraft.time}
+                              onChange={e => setEditDraft(d => ({ ...d, time: e.target.value }))}
+                              className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                            />
+                          </div>
+                        ) : c.booked_slot ? (
+                          <span className="text-[#5b6472]">
+                            {c.booked_slot.date} at {c.booked_slot.time}
+                          </span>
+                        ) : (
+                          <span className="text-[#8d95a3]">—</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        {isEditing ? (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => saveConnection(c)}
+                              className="rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingConnection(null)}
+                              className="rounded-full border border-[#dde1ea] px-3 py-1.5 text-xs font-semibold text-[#5b6472]"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => startEditingConnection(c)}
+                              className="rounded-full border border-[#dde1ea] px-3 py-1.5 text-xs font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => deleteConnection(c)}
+                              className="rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
       </div>
 
       {/* Full profile modal with notes */}
@@ -315,7 +505,7 @@ export default function AdminPage() {
                 <p className="mt-1 text-sm font-medium text-[#11203a]">
                   {selected.full_season ? "Full season (Dec 1 – mid April)" : `${selected.start_date || "—"} → ${selected.end_date || "—"}`}
                 </p>
-        </div>
+              </div>
               <div className="rounded-xl bg-[#f7f8fb] p-4">
                 <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort preference</p>
                 <p className="mt-1 text-sm font-medium text-[#11203a]">{selected.resort || "No preference"}</p>
