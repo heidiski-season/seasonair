@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Mountain } from "lucide-react";
 import Container from "./container";
 import { InstagramIcon, YoutubeIcon, FacebookIcon } from "./social-icons";
@@ -28,6 +31,13 @@ const columns = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide the public footer on the seasonaire dashboard, admin, and chalet portal
+  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/portal-hw22") || pathname?.startsWith("/chalet-dashboard")) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-line bg-white text-night">
       <Container className="grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">

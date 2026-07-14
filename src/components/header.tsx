@@ -27,9 +27,9 @@ export default function Header() {
   }, [open]);
 
   // Hide the public site header entirely on the dashboard
-  if (pathname?.startsWith("/dashboard")) {
-    return null;
-  }
+  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/portal-hw22") || pathname?.startsWith("/chalet-dashboard")) {
+  return null;
+}
 
   return (
     <>
