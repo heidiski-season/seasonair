@@ -88,9 +88,31 @@ export default function ChaletDashboardPage() {
   };
 
   const bookSlot = async (profileId: string, slot: { date: string; time: string }) => {
-    await upsertReview(profileId, "interview", { booked_slot: slot });
-    setBookingFor(null);
-  };
+  await upsertReview(profileId, "interview", { booked_slot: slot });
+
+  const profile = profiles.find(p => p.id === profileId);
+  const { data: chaletData } = await supabase
+    .from("chalet_companies")
+    .select("company_name")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.email) {
+    fetch("/api/send-interview-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        seasonaireEmail: profile.email,
+        seasonaireName: profile.first_name,
+        chaletName: chaletData?.company_name || "A chalet company",
+        date: slot.date,
+        time: slot.time,
+      }),
+    }).catch(err => console.error("Email send failed:", err));
+  }
+
+  setBookingFor(null);
+};
 
   const watchlistCandidates = profiles.filter(p => watchlistIds.includes(p.id));
   const reviewCandidates = profiles.filter(p => reviewedIds.includes(p.id));
