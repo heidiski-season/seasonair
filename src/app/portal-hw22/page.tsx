@@ -14,6 +14,9 @@ export default function AdminPage() {
   const [YourSkiSeasons, setYourSkiSeasons] = useState<any[]>([]);
   const [tab, setTab] = useState<"chalets" | "YourSkiSeasons">("chalets");
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<any>(null);
+  const [notesDraft, setNotesDraft] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -74,9 +77,32 @@ export default function AdminPage() {
     setYourSkiSeasons(s => s.map(p => p.id === id ? { ...p, status } : p));
   };
 
+  const openProfile = (profile: any) => {
+    setSelected(profile);
+    setNotesDraft(profile.admin_notes || "");
+  };
+
+  const saveNotes = async () => {
+    if (!selected) return;
+    setSavingNotes(true);
+    await supabase
+      .from("profiles")
+      .update({ admin_notes: notesDraft })
+      .eq("id", selected.id);
+    setYourSkiSeasons(s => s.map(p => p.id === selected.id ? { ...p, admin_notes: notesDraft } : p));
+    setSelected((sel: any) => ({ ...sel, admin_notes: notesDraft }));
+    setSavingNotes(false);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/");
+  };
+
+  const age = (dob: string) => {
+    if (!dob) return "";
+    const diff = Date.now() - new Date(dob).getTime();
+    return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
   };
 
   if (loading) return (
@@ -210,8 +236,10 @@ export default function AdminPage() {
                 {YourSkiSeasons.map(p => (
                   <tr key={p.id} className="hover:bg-[#f7f8fb]">
                     <td className="px-6 py-4">
-                      <p className="font-medium text-[#11203a]">{p.first_name} {p.last_name}</p>
-                      <p className="text-xs text-[#8d95a3]">{p.email}</p>
+                      <button onClick={() => openProfile(p)} className="text-left hover:underline">
+                        <p className="font-medium text-[#11203a]">{p.first_name} {p.last_name}</p>
+                        <p className="text-xs text-[#8d95a3]">{p.email}</p>
+                      </button>
                     </td>
                     <td className="px-6 py-4 text-[#5b6472]">{p.resort || "—"}</td>
                     <td className="px-6 py-4 text-[#5b6472]">{(p.roles || []).slice(0, 2).join(", ") || "—"}</td>
@@ -222,23 +250,32 @@ export default function AdminPage() {
                         className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
                       >
                         <option value="pending">Pending</option>
+                        <option value="submitted">Submitted</option>
                         <option value="interview">Interview</option>
                         <option value="matched">Matched</option>
                         <option value="hired">Hired</option>
                       </select>
                     </td>
                     <td className="px-6 py-4">
-                      {!p.approved ? (
+                      <div className="flex items-center gap-2">
                         <button
-                          onClick={() => approveYourSkiSeason(p.id)}
-                          className="flex items-center gap-1 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
+                          onClick={() => openProfile(p)}
+                          className="rounded-full border border-[#dde1ea] px-3 py-1.5 text-xs font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
                         >
-                          <CheckCircle className="h-3 w-3" />
-                          Approve
+                          View profile
                         </button>
-                      ) : (
-                        <span className="font-mono text-xs text-green-600">✓ Visible to chalets</span>
-                      )}
+                        {!p.approved ? (
+                          <button
+                            onClick={() => approveYourSkiSeason(p.id)}
+                            className="flex items-center gap-1 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
+                          >
+                            <CheckCircle className="h-3 w-3" />
+                            Approve
+                          </button>
+                        ) : (
+                          <span className="font-mono text-xs text-green-600">✓ Visible</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -248,6 +285,124 @@ export default function AdminPage() {
         )}
 
       </div>
+
+      {/* Full profile modal with notes */}
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8" onClick={() => setSelected(null)}>
+          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-8" onClick={e => e.stopPropagation()}>
+
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-xl font-semibold text-white">
+                  {selected.first_name?.[0]}{selected.last_name?.[0]}
+                </div>
+                <div>
+                  <h2 className="font-display text-2xl font-semibold text-[#11203a]">
+                    {selected.first_name} {selected.last_name}
+                  </h2>
+                  <p className="text-sm text-[#5b6472]">
+                    {age(selected.dob) && `${age(selected.dob)} · `}{selected.nationality}
+                  </p>
+                  <p className="text-xs text-[#8d95a3]">{selected.email} · {selected.phone || "no phone"}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelected(null)} className="text-[#8d95a3] hover:text-[#11203a] text-2xl">✕</button>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-xl bg-[#f7f8fb] p-4">
+                <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Season availability</p>
+                <p className="mt-1 text-sm font-medium text-[#11203a]">{selected.start_date || "—"} → {selected.end_date || "—"}</p>
+              </div>
+              <div className="rounded-xl bg-[#f7f8fb] p-4">
+                <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort preference</p>
+                <p className="mt-1 text-sm font-medium text-[#11203a]">{selected.resort || "No preference"}</p>
+              </div>
+            </div>
+
+            {selected.roles?.length > 0 && (
+              <div className="mt-4">
+                <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-2">Roles</p>
+                <div className="flex flex-wrap gap-2">
+                  {selected.roles.map((r: string) => (
+                    <span key={r} className="rounded-full bg-[#3fa9e0]/10 px-3 py-1 text-xs font-medium text-[#3fa9e0]">{r}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-5 space-y-4 text-sm">
+              {selected.emergency_name && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Emergency contact</p>
+                  <p className="text-[#5b6472]">{selected.emergency_name} ({selected.emergency_relationship || "—"}) · {selected.emergency_phone}</p>
+                </div>
+              )}
+              {selected.university && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Education</p>
+                  <p className="text-[#5b6472]">{selected.degree} · {selected.university} · {selected.grad_year}</p>
+                </div>
+              )}
+              {selected.skills && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Skills</p>
+                  <p className="text-[#5b6472] leading-relaxed">{selected.skills}</p>
+                </div>
+              )}
+              {selected.why_season && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Why they want a season</p>
+                  <p className="text-[#5b6472] leading-relaxed">{selected.why_season}</p>
+                </div>
+              )}
+              {selected.motivation && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">More about them</p>
+                  <p className="text-[#5b6472] leading-relaxed">{selected.motivation}</p>
+                </div>
+              )}
+              {selected.video_url && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Video introduction</p>
+                  <a href={selected.video_url} target="_blank" className="text-[#3fa9e0] underline">Watch video →</a>
+                </div>
+              )}
+              {selected.interview_availability?.length > 0 && (
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Interview availability</p>
+                  <div className="flex flex-wrap gap-2">
+                    {selected.interview_availability.map((slot: any, i: number) => (
+                      <span key={i} className="rounded-full bg-[#f7f8fb] px-3 py-1 text-xs text-[#5b6472]">
+                        {slot.date} at {slot.time}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Admin notes */}
+            <div className="mt-6 border-t border-[#dde1ea] pt-6">
+              <label className="mb-1.5 block text-sm font-medium text-[#11203a]">Admin notes (private — only you see this)</label>
+              <textarea
+                rows={4}
+                value={notesDraft}
+                onChange={e => setNotesDraft(e.target.value)}
+                placeholder="Add any notes about this candidate..."
+                className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+              />
+              <button
+                onClick={saveNotes}
+                className="mt-3 rounded-full bg-[#3fa9e0] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#2c8bbd] transition-colors"
+              >
+                {savingNotes ? "Saving..." : "Save notes"}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
