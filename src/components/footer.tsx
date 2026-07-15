@@ -8,22 +8,14 @@ const columns = [
     links: [
       { href: "/how-to-apply", label: "How to Apply" },
       { href: "/costs-and-inclusions", label: "Costs & Inclusions" },
-      { href: "/faq", label: "Eligibility" },
-      { href: "/faq", label: "Visa Info" },
     ],
   },
-  {
-    title: "About",
-    links: [
-      { href: "/about", label: "Our Story" },
-      { href: "/contact", label: "Contact Us" },
-    ],
-  },
+
   {
     title: "Get in Touch",
     links: [
-      { href: "tel:+447700000000", label: "+44 7700 000000" },
-      { href: "mailto:heidirwarren@gmail.com", label: "heidirwarren@gmail.com" },
+      { href: "tel:+447748484443", label: "+44 7748484443" },
+      { href: "mailto:yourskiseason@gmail.com", label: "yourskiseason@gmail.com" },
     ],
   },
 ];
