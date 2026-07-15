@@ -4,15 +4,15 @@
   /* Core palette — alpine / social, not the usual cream-serif or black-neon defaults */
   --night-piste: #11203a;     /* deep navy — primary dark */
   --night-piste-light: #1b2f54;
-  --snowdrift: #f7f8fb;       /* cool off-white background */
-  --snowdrift-dim: #eef0f6;
+  --snowdrift: #f8f5ef;       /* cool off-white background */
+  --snowdrift-dim: #f0eae0;
   --alpenglow: #2563eb;       /* warm coral-orange — primary CTA / student side */
   --alpenglow-dark: #1d4ed8;
   --glacier: #3fa9e0;         /* ice blue — secondary / partner side */
   --glacier-dark: #2c8bbd;
   --stone: #5b6472;           /* body text */
   --stone-light: #8d95a3;
-  --line: #dde1ea;
+  --line: #e3ddd0;
 
   --font-body: var(--font-inter);
   --font-display: var(--font-fraunces);

@@ -1,8 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Mountain } from "lucide-react";
 import Container from "./container";
 import { InstagramIcon, YoutubeIcon, FacebookIcon } from "./social-icons";
 
@@ -10,46 +6,40 @@ const columns = [
   {
     title: "Find a Season",
     links: [
-      { href: "/services", label: "Job Roles" },
+      { href: "/how-to-apply", label: "How to Apply" },
       { href: "/costs-and-inclusions", label: "Costs & Inclusions" },
+      { href: "/faq", label: "Eligibility" },
+      { href: "/faq", label: "Visa Info" },
     ],
   },
   {
     title: "About",
     links: [
       { href: "/about", label: "Our Story" },
-      { href: "/how-to-apply", label: "Interested? Apply Now"}
+      { href: "/contact", label: "Contact Us" },
     ],
   },
   {
     title: "Get in Touch",
     links: [
-      { href: "tel:+44 7748484443", label: "+44 7748484443" },
-      { href: "mailto:YourSkiSeason@gmail.com", label: "yourskiseason@gmail.com" },
+      { href: "tel:+447700000000", label: "+44 7700 000000" },
+      { href: "mailto:heidirwarren@gmail.com", label: "heidirwarren@gmail.com" },
     ],
   },
 ];
 
 export default function Footer() {
-  const pathname = usePathname();
-
-  // Hide the public footer on the seasonaire dashboard, admin, and chalet portal
-  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/portal-hw22") || pathname?.startsWith("/chalet-dashboard")) {
-    return null;
-  }
-
   return (
-    <footer className="border-t border-line bg-white text-night">
+    <footer className="border-t border-line bg-[#f8f5ef] text-night">
       <Container className="grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
 
-        {/* Logo + description */}
         <div>
-          <Link href="/" className="flex items-center gap-2 font-display text-xl font-semibold text-night">
-            <img src="/logo.png" alt="YourSkiSeason" className="h-10 w-auto brightness-0 invert" />
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt="YourSkiSeason" className="h-10 w-auto" />
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-stone">
-            We place students and young people  into real, paid ski-season
-            jobs across the Alps and build the community around it.
+            We place students and gap-year travellers into real, paid ski-season
+            jobs across the Alps — and build the community around it.
           </p>
           <div className="mt-6 flex gap-4">
             <a href="#" aria-label="Instagram" className="text-stone transition-colors hover:text-night">
@@ -89,8 +79,8 @@ export default function Footer() {
       <Container className="flex flex-col gap-3 border-t border-line py-6 text-xs text-stone sm:flex-row sm:items-center sm:justify-between">
         <p>Copyright YourSkiSeason. All Rights Reserved 2026.</p>
         <div className="flex gap-5">
-          <Link href="https://www.smallerearth.com/privacy-policy" className="hover:text-night">Privacy Policy</Link>
-          <Link href="https://www.smallerearth.com/terms-of-service"  className="hover:text-night">Terms of Use</Link>
+          <Link href="/privacy" className="hover:text-night">Privacy Policy</Link>
+          <Link href="https://www.smallerearth.com/terms-of-service" className="hover:text-night">Terms of Use</Link>
           <Link href="https://www.smallerearth.com/cookie-policy" className="hover:text-night">Cookie Policy</Link>
         </div>
       </Container>

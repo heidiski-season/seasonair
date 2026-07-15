@@ -167,16 +167,16 @@ export default function AdminPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center">
+    <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center">
       <p className="text-[#5b6472]">Loading admin panel...</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb]">
+    <div className="min-h-screen bg-[#f8f5ef]">
 
       {/* Top bar */}
-      <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-[#e3ddd0] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
           YourSkiSeason — Admin
@@ -197,7 +197,7 @@ export default function AdminPage() {
             { label: "Chalet companies", value: chalets.length },
             { label: "Active connections", value: connections.length },
           ].map(stat => (
-            <div key={stat.label} className="rounded-2xl border border-[#dde1ea] bg-white p-5 text-center">
+            <div key={stat.label} className="rounded-2xl border border-[#e3ddd0] bg-white p-5 text-center">
               <p className="font-display text-3xl font-semibold text-[#11203a]">{stat.value}</p>
               <p className="mt-1 text-xs text-[#8d95a3]">{stat.label}</p>
             </div>
@@ -208,19 +208,19 @@ export default function AdminPage() {
         <div className="mb-6 flex flex-wrap gap-2">
           <button
             onClick={() => setTab("chalets")}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "chalets" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "chalets" ? "bg-[#3fa9e0] text-white" : "border border-[#e3ddd0] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
           >
             Chalet companies ({chalets.length})
           </button>
           <button
             onClick={() => setTab("YourSkiSeasons")}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "YourSkiSeasons" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "YourSkiSeasons" ? "bg-[#3fa9e0] text-white" : "border border-[#e3ddd0] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
           >
             YourSkiSeasons ({YourSkiSeasons.length})
           </button>
           <button
             onClick={() => setTab("connections")}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "connections" ? "bg-[#3fa9e0] text-white" : "border border-[#dde1ea] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
+            className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${tab === "connections" ? "bg-[#3fa9e0] text-white" : "border border-[#e3ddd0] bg-white text-[#5b6472] hover:border-[#3fa9e0]"}`}
           >
             Connections ({connections.length})
           </button>
@@ -228,9 +228,9 @@ export default function AdminPage() {
 
         {/* Chalet companies table */}
         {tab === "chalets" && (
-          <div className="rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="border-b border-[#dde1ea] bg-[#f7f8fb]">
+              <thead className="border-b border-[#e3ddd0] bg-[#f8f5ef]">
                 <tr>
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Company</th>
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Contact</th>
@@ -239,12 +239,12 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#dde1ea]">
+              <tbody className="divide-y divide-[#e3ddd0]">
                 {chalets.length === 0 && (
                   <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No chalet companies yet.</td></tr>
                 )}
                 {chalets.map(chalet => (
-                  <tr key={chalet.id} className="hover:bg-[#f7f8fb]">
+                  <tr key={chalet.id} className="hover:bg-[#f8f5ef]">
                     <td className="px-6 py-4 font-medium text-[#11203a]">{chalet.company_name}</td>
                     <td className="px-6 py-4 text-[#5b6472]">
                       <p>{chalet.contact_name}</p>
@@ -285,9 +285,9 @@ export default function AdminPage() {
 
         {/* YourSkiSeasons table */}
         {tab === "YourSkiSeasons" && (
-          <div className="rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="border-b border-[#dde1ea] bg-[#f7f8fb]">
+              <thead className="border-b border-[#e3ddd0] bg-[#f8f5ef]">
                 <tr>
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Name</th>
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort</th>
@@ -296,12 +296,12 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#dde1ea]">
+              <tbody className="divide-y divide-[#e3ddd0]">
                 {YourSkiSeasons.length === 0 && (
                   <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No YourSkiSeasons yet.</td></tr>
                 )}
                 {YourSkiSeasons.map(p => (
-                  <tr key={p.id} className="hover:bg-[#f7f8fb]">
+                  <tr key={p.id} className="hover:bg-[#f8f5ef]">
                     <td className="px-6 py-4">
                       <button onClick={() => openProfile(p)} className="text-left hover:underline">
                         <p className="font-medium text-[#11203a]">{p.first_name} {p.last_name}</p>
@@ -314,7 +314,7 @@ export default function AdminPage() {
                       <select
                         value={p.status || "pending"}
                         onChange={e => updateStatus(p.id, e.target.value)}
-                        className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                        className="rounded-lg border border-[#e3ddd0] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
                       >
                         <option value="pending">Pending</option>
                         <option value="submitted">Submitted</option>
@@ -327,7 +327,7 @@ export default function AdminPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openProfile(p)}
-                          className="rounded-full border border-[#dde1ea] px-3 py-1.5 text-xs font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
+                          className="rounded-full border border-[#e3ddd0] px-3 py-1.5 text-xs font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
                         >
                           View profile
                         </button>
@@ -353,9 +353,9 @@ export default function AdminPage() {
 
         {/* Connections table */}
         {tab === "connections" && (
-          <div className="rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="border-b border-[#dde1ea] bg-[#f7f8fb]">
+              <thead className="border-b border-[#e3ddd0] bg-[#f8f5ef]">
                 <tr>
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Seasonaire</th>
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Chalet company</th>
@@ -364,7 +364,7 @@ export default function AdminPage() {
                   <th className="px-6 py-4 text-left font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#dde1ea]">
+              <tbody className="divide-y divide-[#e3ddd0]">
                 {connections.length === 0 && (
                   <tr><td colSpan={5} className="px-6 py-8 text-center text-[#8d95a3]">No connections yet — nothing has happened between a chalet and a seasonaire.</td></tr>
                 )}
@@ -374,7 +374,7 @@ export default function AdminPage() {
                   const isEditing = editingConnection === connectionKey(c);
 
                   return (
-                    <tr key={connectionKey(c)} className="hover:bg-[#f7f8fb] align-top">
+                    <tr key={connectionKey(c)} className="hover:bg-[#f8f5ef] align-top">
                       <td className="px-6 py-4">
                         {profile ? (
                           <button onClick={() => openProfile(profile)} className="text-left hover:underline">
@@ -396,7 +396,7 @@ export default function AdminPage() {
                           <select
                             value={editDraft.status}
                             onChange={e => setEditDraft(d => ({ ...d, status: e.target.value }))}
-                            className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                            className="rounded-lg border border-[#e3ddd0] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
                           >
                             <option value="watchlist">Watchlist</option>
                             <option value="interested">On review</option>
@@ -416,13 +416,13 @@ export default function AdminPage() {
                               type="date"
                               value={editDraft.date}
                               onChange={e => setEditDraft(d => ({ ...d, date: e.target.value }))}
-                              className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                              className="rounded-lg border border-[#e3ddd0] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
                             />
                             <input
                               type="time"
                               value={editDraft.time}
                               onChange={e => setEditDraft(d => ({ ...d, time: e.target.value }))}
-                              className="rounded-lg border border-[#dde1ea] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
+                              className="rounded-lg border border-[#e3ddd0] px-2 py-1 text-xs text-[#11203a] focus:outline-none"
                             />
                           </div>
                         ) : c.booked_slot ? (
@@ -444,7 +444,7 @@ export default function AdminPage() {
                             </button>
                             <button
                               onClick={() => setEditingConnection(null)}
-                              className="rounded-full border border-[#dde1ea] px-3 py-1.5 text-xs font-semibold text-[#5b6472]"
+                              className="rounded-full border border-[#e3ddd0] px-3 py-1.5 text-xs font-semibold text-[#5b6472]"
                             >
                               Cancel
                             </button>
@@ -453,7 +453,7 @@ export default function AdminPage() {
                           <div className="flex gap-2">
                             <button
                               onClick={() => startEditingConnection(c)}
-                              className="rounded-full border border-[#dde1ea] px-3 py-1.5 text-xs font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
+                              className="rounded-full border border-[#e3ddd0] px-3 py-1.5 text-xs font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
                             >
                               Edit
                             </button>
@@ -500,13 +500,13 @@ export default function AdminPage() {
             </div>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl bg-[#f7f8fb] p-4">
+              <div className="rounded-xl bg-[#f8f5ef] p-4">
                 <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Season availability</p>
                 <p className="mt-1 text-sm font-medium text-[#11203a]">
                   {selected.full_season ? "Full season (Dec 1 – mid April)" : `${selected.start_date || "—"} → ${selected.end_date || "—"}`}
                 </p>
               </div>
-              <div className="rounded-xl bg-[#f7f8fb] p-4">
+              <div className="rounded-xl bg-[#f8f5ef] p-4">
                 <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort preference</p>
                 <p className="mt-1 text-sm font-medium text-[#11203a]">{selected.resort || "No preference"}</p>
               </div>
@@ -565,7 +565,7 @@ export default function AdminPage() {
                   <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3] mb-1">Interview availability</p>
                   <div className="flex flex-wrap gap-2">
                     {selected.interview_availability.map((slot: any, i: number) => (
-                      <span key={i} className="rounded-full bg-[#f7f8fb] px-3 py-1 text-xs text-[#5b6472]">
+                      <span key={i} className="rounded-full bg-[#f8f5ef] px-3 py-1 text-xs text-[#5b6472]">
                         {slot.date} at {slot.time}
                       </span>
                     ))}
@@ -575,14 +575,14 @@ export default function AdminPage() {
             </div>
 
             {/* Admin notes */}
-            <div className="mt-6 border-t border-[#dde1ea] pt-6">
+            <div className="mt-6 border-t border-[#e3ddd0] pt-6">
               <label className="mb-1.5 block text-sm font-medium text-[#11203a]">Admin notes (private — only you see this)</label>
               <textarea
                 rows={4}
                 value={notesDraft}
                 onChange={e => setNotesDraft(e.target.value)}
                 placeholder="Add any notes about this candidate..."
-                className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+                className="w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
               />
               <button
                 onClick={saveNotes}

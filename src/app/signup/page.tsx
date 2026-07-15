@@ -42,7 +42,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
         {/* Logo */}
@@ -59,7 +59,7 @@ export default function SignupPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+        <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
 
           {/* Name */}
           <div className="mb-4 grid grid-cols-2 gap-3">
@@ -70,7 +70,7 @@ export default function SignupPage() {
                 placeholder="Heidi"
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
-                className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+                className="w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
               />
             </div>
             <div>
@@ -80,7 +80,7 @@ export default function SignupPage() {
                 placeholder="Warren"
                 value={lastName}
                 onChange={e => setLastName(e.target.value)}
-                className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+                className="w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
               />
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function SignupPage() {
               placeholder="heidi@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+              className="w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
             />
           </div>
 
@@ -106,7 +106,7 @@ export default function SignupPage() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === "Enter" && handleSignup()}
-              className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+              className="w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
             />
           </div>
 

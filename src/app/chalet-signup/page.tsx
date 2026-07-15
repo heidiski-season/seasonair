@@ -50,12 +50,12 @@ export default function ChaletSignupPage() {
     setLoading(false);
   };
 
-  const ic = "w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20";
+  const ic = "w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20";
   const lc = "mb-1.5 block text-sm font-medium text-[#11203a]";
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center px-4">
         <div className="w-full max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#3fa9e0]/10">
             <Mountain className="h-8 w-8 text-[#3fa9e0]" strokeWidth={2} />
@@ -81,7 +81,7 @@ export default function ChaletSignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
 
         {/* Logo */}
@@ -98,7 +98,7 @@ export default function ChaletSignupPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+        <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
 
           <div className="space-y-4">
             <div>
@@ -131,7 +131,7 @@ export default function ChaletSignupPage() {
             <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>
           )}
 
-          <div className="mt-4 rounded-xl bg-[#f7f8fb] p-4 text-xs text-[#5b6472]">
+          <div className="mt-4 rounded-xl bg-[#f8f5ef] p-4 text-xs text-[#5b6472]">
             ℹ️ Your account will be reviewed by the YourSkiSeason team before you can access YourSkiSeason profiles. This usually takes less than 48 hours.
           </div>
 

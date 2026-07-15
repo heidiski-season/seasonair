@@ -21,7 +21,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         </span>
       </button>
       {open && (
-        <div className="border-t border-[#dde1ea] px-6 py-4">
+        <div className="border-t border-[#e3ddd0] px-6 py-4">
           <p className="text-sm leading-relaxed text-[#5b6472]">{a}</p>
         </div>
       )}
@@ -96,7 +96,7 @@ const faqs = [
 
 export default function PartnersPage() {
   return (
-    <div className="min-h-screen bg-[#f7f8fb]">
+    <div className="min-h-screen bg-[#f8f5ef]">
 
       {/* Hero */}
       <div className="bg-[#0c2236] py-20 sm:py-28">
@@ -169,7 +169,7 @@ export default function PartnersPage() {
           <h2 className="mt-3 font-display text-3xl font-semibold text-[#11203a] sm:text-4xl">
             Common questions.
           </h2>
-          <div className="mt-10 divide-y divide-[#dde1ea] rounded-2xl border border-[#dde1ea] bg-white overflow-hidden">
+          <div className="mt-10 divide-y divide-[#e3ddd0] rounded-2xl border border-[#e3ddd0] bg-white overflow-hidden">
             {faqs.map((faq) => (
               <FaqItem key={faq.q} q={faq.q} a={faq.a} />
             ))}

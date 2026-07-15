@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         <h2 style="color: #11203a;">Your interview has been booked! 🎿</h2>
         <p>Hi ${seasonaireName},</p>
         <p><strong>${chaletName}</strong> has booked an interview with you.</p>
-        <div style="background: #f7f8fb; border-radius: 12px; padding: 16px; margin: 20px 0;">
+        <div style="background: #f8f5ef; border-radius: 12px; padding: 16px; margin: 20px 0;">
           <p style="margin: 0; color: #5b6472;">Date</p>
           <p style="margin: 4px 0 12px; color: #11203a; font-weight: 600;">${formattedDate}</p>
           <p style="margin: 0; color: #5b6472;">Time</p>

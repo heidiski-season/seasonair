@@ -124,21 +124,21 @@ export default function ChaletDashboardPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center">
+    <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center">
       <p className="text-[#5b6472]">Loading candidates...</p>
     </div>
   );
 
   const navItemClass = (id: string) =>
     `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
-      nav === id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f7f8fb]"
+      nav === id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f8f5ef]"
     }`;
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb]">
+    <div className="min-h-screen bg-[#f8f5ef]">
 
       {/* Top bar */}
-      <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-[#e3ddd0] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
           YourSkiSeason — Chalet Portal
@@ -156,7 +156,7 @@ export default function ChaletDashboardPage() {
 
         {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 lg:block">
-          <div className="rounded-2xl border border-[#dde1ea] bg-white p-4">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white p-4">
             <nav className="space-y-1">
               <button onClick={() => setNav("home")} className={navItemClass("home")}>
                 <HomeIcon className="h-4 w-4 shrink-0" />
@@ -185,13 +185,13 @@ export default function ChaletDashboardPage() {
               </div>
 
               {profiles.length === 0 ? (
-                <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                <div className="rounded-2xl border border-[#e3ddd0] bg-white p-12 text-center">
                   <p className="text-[#5b6472]">No candidates available yet.</p>
                 </div>
               ) : (
                 <div
                   ref={feedRef}
-                  className="h-[calc(100vh-220px)] max-w-md mx-auto overflow-y-scroll snap-y snap-mandatory rounded-3xl border border-[#dde1ea] bg-black shadow-xl"
+                  className="h-[calc(100vh-220px)] max-w-md mx-auto overflow-y-scroll snap-y snap-mandatory rounded-3xl border border-[#e3ddd0] bg-black shadow-xl"
                 >
                   {profiles.map(profile => (
                     <div
@@ -272,13 +272,13 @@ export default function ChaletDashboardPage() {
                 <p className="mt-1 text-sm text-[#5b6472]">Candidates you've saved but haven't added to review yet.</p>
               </div>
               {watchlistCandidates.length === 0 ? (
-                <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                <div className="rounded-2xl border border-[#e3ddd0] bg-white p-12 text-center">
                   <p className="text-[#5b6472]">Nothing here yet — tap the heart on Home to save candidates.</p>
                 </div>
               ) : (
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {watchlistCandidates.map(profile => (
-                    <div key={profile.id} className="rounded-2xl border border-[#dde1ea] bg-white p-6">
+                    <div key={profile.id} className="rounded-2xl border border-[#e3ddd0] bg-white p-6">
                       <div className="flex items-center gap-3">
                         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-lg font-semibold text-white">
                           {profile.first_name?.[0]}{profile.last_name?.[0]}
@@ -291,7 +291,7 @@ export default function ChaletDashboardPage() {
                       <div className="mt-5 flex gap-2">
                         <button
                           onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
-                          className="flex-1 rounded-full border border-[#dde1ea] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
+                          className="flex-1 rounded-full border border-[#e3ddd0] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
                         >
                           View profile
                         </button>
@@ -316,7 +316,7 @@ export default function ChaletDashboardPage() {
                 <p className="mt-1 text-sm text-[#5b6472]">Candidates you're seriously interested in.</p>
               </div>
               {reviewCandidates.length === 0 ? (
-                <div className="rounded-2xl border border-[#dde1ea] bg-white p-12 text-center">
+                <div className="rounded-2xl border border-[#e3ddd0] bg-white p-12 text-center">
                   <p className="text-[#5b6472]">You haven't added anyone to review yet.</p>
                 </div>
               ) : (
@@ -359,14 +359,14 @@ export default function ChaletDashboardPage() {
                         <div className="mt-5 flex gap-2">
                           <button
                             onClick={() => { setSelected(profile); setActiveTab("Overview"); }}
-                            className="flex-1 rounded-full border border-[#dde1ea] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
+                            className="flex-1 rounded-full border border-[#e3ddd0] py-2.5 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0] transition-colors"
                           >
                             View profile
                           </button>
                           {bookedSlot ? (
                             <a
                               href="mailto:yourskiseason@gmail.com?subject=Change interview booking"
-                              className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-[#dde1ea] bg-[#f7f8fb] py-2.5 text-sm font-semibold text-[#8d95a3]"
+                              className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-[#e3ddd0] bg-[#f8f5ef] py-2.5 text-sm font-semibold text-[#8d95a3]"
                               title="Email us to change this booking"
                             >
                               🔒 Locked in
@@ -403,7 +403,7 @@ export default function ChaletDashboardPage() {
             </div>
 
             {(!bookingFor.interview_availability || bookingFor.interview_availability.length === 0) ? (
-              <p className="mt-6 rounded-xl bg-[#f7f8fb] p-5 text-sm text-[#5b6472]">
+              <p className="mt-6 rounded-xl bg-[#f8f5ef] p-5 text-sm text-[#5b6472]">
                 {bookingFor.first_name} hasn't added any interview availability yet. Try reaching out directly via their contact details, or check back later.
               </p>
             ) : (
@@ -424,7 +424,7 @@ export default function ChaletDashboardPage() {
                 )
                   .sort(([a], [b]) => a.localeCompare(b))
                   .map(([date, times]) => (
-                    <div key={date} className="rounded-xl border border-[#dde1ea] p-4">
+                    <div key={date} className="rounded-xl border border-[#e3ddd0] p-4">
                       <p className="text-sm font-semibold text-[#11203a]">
                         {new Date(date + "T00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
                       </p>
@@ -452,7 +452,7 @@ export default function ChaletDashboardPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-8" onClick={() => setSelected(null)}>
           <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white flex flex-col" onClick={e => e.stopPropagation()}>
 
-            <div className="border-b border-[#dde1ea] p-6">
+            <div className="border-b border-[#e3ddd0] p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#3fa9e0] to-[#11203a] font-display text-2xl font-semibold text-white">
@@ -475,7 +475,7 @@ export default function ChaletDashboardPage() {
                       {getReviewRow(selected.id)?.booked_slot ? (
                         <a
                           href="mailto:yourskiseason@gmail.com?subject=Change interview booking"
-                          className="flex items-center gap-1.5 rounded-full border border-[#dde1ea] bg-[#f7f8fb] px-4 py-2 text-sm font-semibold text-[#8d95a3]"
+                          className="flex items-center gap-1.5 rounded-full border border-[#e3ddd0] bg-[#f8f5ef] px-4 py-2 text-sm font-semibold text-[#8d95a3]"
                         >
                           🔒 Interview locked in — email us to change
                         </a>
@@ -489,7 +489,7 @@ export default function ChaletDashboardPage() {
                       )}
                       <button
                         onClick={() => toggleWatchlist(selected.id)}
-                        className="flex items-center gap-1.5 rounded-full border border-[#dde1ea] px-4 py-2 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
+                        className="flex items-center gap-1.5 rounded-full border border-[#e3ddd0] px-4 py-2 text-sm font-semibold text-[#5b6472] hover:border-[#3fa9e0]"
                       >
                         <Heart className={`h-4 w-4 ${watchlistIds.includes(selected.id) ? "fill-red-500 text-red-500" : ""}`} />
                         {watchlistIds.includes(selected.id) ? "Saved" : "Watchlist"}
@@ -502,7 +502,7 @@ export default function ChaletDashboardPage() {
             </div>
 
             <div className="flex flex-1 overflow-hidden">
-              <div className="w-48 shrink-0 border-r border-[#dde1ea] bg-[#f7f8fb] p-3">
+              <div className="w-48 shrink-0 border-r border-[#e3ddd0] bg-[#f8f5ef] p-3">
                 {tabs.map(tab => (
                   <button
                     key={tab}
@@ -519,13 +519,13 @@ export default function ChaletDashboardPage() {
                 {activeTab === "Overview" && (
                   <div className="space-y-5 text-sm">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-xl bg-[#f7f8fb] p-4">
+                      <div className="rounded-xl bg-[#f8f5ef] p-4">
                         <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Available</p>
                         <p className="mt-1 font-medium text-[#11203a]">
                           {selected.full_season ? "Full season (Dec 1 – mid April)" : `${selected.start_date} → ${selected.end_date}`}
                         </p>
                       </div>
-                      <div className="rounded-xl bg-[#f7f8fb] p-4">
+                      <div className="rounded-xl bg-[#f8f5ef] p-4">
                         <p className="font-mono text-xs uppercase tracking-wide text-[#8d95a3]">Resort preference</p>
                         <p className="mt-1 font-medium text-[#11203a]">{selected.resort || "No preference"}</p>
                       </div>

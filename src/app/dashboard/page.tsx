@@ -163,30 +163,30 @@ export default function DashboardPage() {
     return false;
   });
 
-  const ic = "w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20";
+  const ic = "w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20";
   const lc = "mb-1.5 block text-sm font-medium text-[#11203a]";
   const saveBtn = "mt-6 rounded-full bg-[#3fa9e0] px-8 py-3 font-semibold text-white hover:bg-[#2c8bbd] transition-colors";
   const continueBtn = "mt-6 rounded-full border border-[#3fa9e0] px-8 py-3 font-semibold text-[#3fa9e0] hover:bg-[#3fa9e0]/10 transition-colors";
   const yesNoBtn = (active: boolean) =>
-    `rounded-xl border px-6 py-2.5 text-sm font-medium transition-colors ${active ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#dde1ea] text-[#5b6472]"}`;
+    `rounded-xl border px-6 py-2.5 text-sm font-medium transition-colors ${active ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#e3ddd0] text-[#5b6472]"}`;
 
   const roles = ["Chalet Host", "Driver", "Cleaner", "Chef"];
 
   if (loading) return (
-    <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center">
+    <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center">
       <p className="text-[#5b6472]">Loading your dashboard...</p>
     </div>
   );
 
   const navItemClass = (id: string) =>
     `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors ${
-      active === id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f7f8fb]"
+      active === id ? "bg-[#3fa9e0]/10 text-[#3fa9e0]" : "text-[#5b6472] hover:bg-[#f8f5ef]"
     }`;
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb]">
+    <div className="min-h-screen bg-[#f8f5ef]">
 
-      <div className="border-b border-[#dde1ea] bg-white px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-[#e3ddd0] bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-display text-lg font-semibold text-[#11203a]">
           <Mountain className="h-5 w-5 text-[#3fa9e0]" strokeWidth={2.5} />
           YourSkiSeason Dashboard
@@ -203,9 +203,9 @@ export default function DashboardPage() {
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-10 sm:px-6">
 
         <aside className="hidden w-64 shrink-0 lg:block">
-          <div className="rounded-2xl border border-[#dde1ea] bg-white p-4">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white p-4">
 
-            <div className="mb-4 rounded-xl bg-[#f7f8fb] p-4 text-center">
+            <div className="mb-4 rounded-xl bg-[#f8f5ef] p-4 text-center">
               <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-[#3fa9e0]/10">
                 <User className="h-6 w-6 text-[#3fa9e0]" />
               </div>
@@ -232,7 +232,7 @@ export default function DashboardPage() {
 
               <button
                 onClick={() => setProfileOpen(o => !o)}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#5b6472] hover:bg-[#f7f8fb]"
+                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#5b6472] hover:bg-[#f8f5ef]"
               >
                 <span className="flex items-center gap-3">
                   <User className="h-4 w-4 shrink-0" />
@@ -242,13 +242,13 @@ export default function DashboardPage() {
               </button>
 
               {profileOpen && (
-                <div className="ml-4 space-y-1 border-l border-[#dde1ea] pl-3">
+                <div className="ml-4 space-y-1 border-l border-[#e3ddd0] pl-3">
                   {profileSections.map(s => (
                     <button key={s.id} onClick={() => setActive(s.id)} className={navItemClass(s.id)}>
                       {completedSections.find(c => c.id === s.id) ? (
                         <CheckCircle className="h-4 w-4 shrink-0 text-[#3fa9e0]" />
                       ) : (
-                        <Circle className="h-4 w-4 shrink-0 text-[#dde1ea]" />
+                        <Circle className="h-4 w-4 shrink-0 text-[#e3ddd0]" />
                       )}
                       {s.label}
                     </button>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                 Documents
               </button>
 
-              <div className="my-2 border-t border-[#dde1ea]" />
+              <div className="my-2 border-t border-[#e3ddd0]" />
 
               <button onClick={() => setActive("help")} className={navItemClass("help")}>
                 <HelpCircle className="h-4 w-4 shrink-0" />
@@ -282,7 +282,7 @@ export default function DashboardPage() {
 
         <main className="flex-1 space-y-6">
           {active === "overview" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">
                 Welcome back{form.first_name ? `, ${form.first_name}` : ""}! 👋
               </h1>
@@ -293,21 +293,21 @@ export default function DashboardPage() {
               <div className="mt-8 grid grid-cols-4 gap-4">
                 {["Applied", "Interview", "Matched", "Hired"].map((stage, i) => (
                   <div key={stage} className={`rounded-xl border p-4 text-center text-sm font-medium ${
-                    i === 0 ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#dde1ea] text-[#8d95a3]"
+                    i === 0 ? "border-[#3fa9e0] bg-[#3fa9e0]/10 text-[#3fa9e0]" : "border-[#e3ddd0] text-[#8d95a3]"
                   }`}>
                     {stage}
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 rounded-xl bg-[#f7f8fb] p-5">
+              <div className="mt-8 rounded-xl bg-[#f8f5ef] p-5">
                 <p className="text-sm font-medium text-[#11203a]">How this works</p>
                 <p className="mt-1 text-sm text-[#5b6472]">
                   Fill in as much as you can — your progress saves automatically, so you can log out and come back anytime. All sections must be complete before you can submit. You can keep editing even after submitting.
                 </p>
               </div>
 
-              <div className="mt-8 border-t border-[#dde1ea] pt-6">
+              <div className="mt-8 border-t border-[#e3ddd0] pt-6">
                 <h2 className="font-display text-lg font-semibold text-[#11203a]">Showcase</h2>
                 <p className="mt-1 text-sm text-[#5b6472]">Optional — but strongly recommended.</p>
 
@@ -344,7 +344,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-8 flex flex-col gap-3 border-t border-[#dde1ea] pt-6 sm:flex-row sm:items-center">
+              <div className="mt-8 flex flex-col gap-3 border-t border-[#e3ddd0] pt-6 sm:flex-row sm:items-center">
                 <button
                   onClick={async () => {
                     if (completedSections.length < requiredSections.length) {
@@ -358,7 +358,7 @@ export default function DashboardPage() {
                   disabled={completedSections.length < requiredSections.length}
                   className={`rounded-full px-8 py-3 font-semibold text-white transition-colors ${
                     completedSections.length < requiredSections.length
-                      ? "bg-[#dde1ea] text-[#8d95a3] cursor-not-allowed"
+                      ? "bg-[#e3ddd0] text-[#8d95a3] cursor-not-allowed"
                       : "bg-[#3fa9e0] hover:bg-[#2c8bbd]"
                   }`}
                 >
@@ -376,12 +376,12 @@ export default function DashboardPage() {
           )}
 
           {active === "basic" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Basic Information</h1>
 
               <div className="mt-6 flex items-center gap-6">
                 <label className="cursor-pointer shrink-0">
-                  <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-[#3fa9e0]/40 bg-[#f7f8fb] hover:border-[#3fa9e0]">
+                  <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-[#3fa9e0]/40 bg-[#f8f5ef] hover:border-[#3fa9e0]">
                     {form.photo_url ? (
                       <img src={form.photo_url} alt="Your photo" className="h-full w-full object-cover" />
                     ) : (
@@ -432,7 +432,7 @@ export default function DashboardPage() {
               </div>
 
               {/* CV upload — visible to chalet companies */}
-              <div className="mt-6 border-t border-[#dde1ea] pt-6">
+              <div className="mt-6 border-t border-[#e3ddd0] pt-6">
                 <label className={lc}>CV / Resume</label>
                 <p className="mb-2 text-xs text-[#8d95a3]">Optional, but recommended — chalet companies can view this alongside your profile. PDF or JPEG, 3MB max.</p>
                 <div className="flex items-center gap-3">
@@ -462,7 +462,7 @@ export default function DashboardPage() {
           )}
 
           {active === "emergency" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Emergency Contact</h1>
               <p className="mt-1 text-sm text-[#5b6472]">Who should we contact in case of an emergency during your season?</p>
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -478,13 +478,13 @@ export default function DashboardPage() {
           )}
 
           {active === "availability" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Availability</h1>
               <p className="mt-1 text-sm text-[#5b6472]">These are the season dates you're available to work — not your interview times (see "Interview Availability" in the sidebar for that).</p>
 
               <div className="mt-6 space-y-3">
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
-                  form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+                  form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#e3ddd0] text-[#5b6472] hover:border-[#3fa9e0]"
                 }`}>
                   <input
                     type="checkbox"
@@ -499,7 +499,7 @@ export default function DashboardPage() {
                 </label>
 
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
-                  !form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+                  !form.full_season ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#e3ddd0] text-[#5b6472] hover:border-[#3fa9e0]"
                 }`}>
                   <input
                     type="checkbox"
@@ -526,11 +526,11 @@ export default function DashboardPage() {
           )}
 
           {active === "role" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Role Preference</h1>
               <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {roles.map(role => (
-                  <label key={role} className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-4 py-3 text-sm transition-colors ${form.roles.includes(role) ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"}`}>
+                  <label key={role} className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-4 py-3 text-sm transition-colors ${form.roles.includes(role) ? "border-[#3fa9e0] bg-[#3fa9e0]/10" : "border-[#e3ddd0] text-[#5b6472] hover:border-[#3fa9e0]"}`}>
                     <input type="checkbox" checked={form.roles.includes(role)} onChange={() => toggleRole(role)} className="accent-[#3fa9e0]" />
                     {role}
                   </label>
@@ -544,7 +544,7 @@ export default function DashboardPage() {
           )}
 
           {active === "motivation" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">About You</h1>
               <div className="mt-6 space-y-5">
                 <div>
@@ -569,7 +569,7 @@ export default function DashboardPage() {
           )}
 
           {active === "skills" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Skills & Experience</h1>
               <div className="mt-6 space-y-6">
                 <div><label className={lc}>Any relevant experience</label><textarea rows={4} value={form.skills} onChange={e => update("skills", e.target.value)} className={ic} /></div>
@@ -619,7 +619,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Cooking / food — optional */}
-                <div className="border-t border-[#dde1ea] pt-5">
+                <div className="border-t border-[#e3ddd0] pt-5">
                   <label className={lc}>Cooking qualifications, food photos, or dinner parties you've hosted</label>
                   <p className="mb-2 text-xs text-[#8d95a3]">Optional — but recommended, especially for chalet host or chef roles.</p>
                   <textarea
@@ -646,7 +646,7 @@ export default function DashboardPage() {
           )}
 
           {active === "education" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Education</h1>
 
               <div className="mt-6">
@@ -682,7 +682,7 @@ export default function DashboardPage() {
           )}
 
           {active === "interview" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Interview Availability</h1>
               <p className="mt-2 text-sm text-[#5b6472]">
                 Pick a date, then tap the time slots you're free for a call. Chalet companies will book you into one of these.
@@ -724,7 +724,7 @@ export default function DashboardPage() {
                           className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
                             isSelected
                               ? "border-[#3fa9e0] bg-[#3fa9e0] text-white"
-                              : "border-[#dde1ea] text-[#5b6472] hover:border-[#3fa9e0]"
+                              : "border-[#e3ddd0] text-[#5b6472] hover:border-[#3fa9e0]"
                           }`}
                         >
                           {time}
@@ -735,10 +735,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              <div className="mt-8 border-t border-[#dde1ea] pt-6">
+              <div className="mt-8 border-t border-[#e3ddd0] pt-6">
                 <p className="mb-3 text-sm font-medium text-[#11203a]">Your selected slots</p>
                 {(!form.interview_availability || form.interview_availability.length === 0) ? (
-                  <p className="rounded-xl bg-[#f7f8fb] p-5 text-sm text-[#5b6472]">
+                  <p className="rounded-xl bg-[#f8f5ef] p-5 text-sm text-[#5b6472]">
                     You haven't added any interview slots yet.
                   </p>
                 ) : (
@@ -755,7 +755,7 @@ export default function DashboardPage() {
                     )
                       .sort(([a], [b]) => a.localeCompare(b))
                       .map(([date, times]) => (
-                        <div key={date} className="rounded-xl border border-[#dde1ea] p-4">
+                        <div key={date} className="rounded-xl border border-[#e3ddd0] p-4">
                           <p className="text-sm font-semibold text-[#11203a]">
                             {new Date(date + "T00:00").toLocaleDateString("en-GB", {
                               weekday: "long", day: "numeric", month: "long",
@@ -792,7 +792,7 @@ export default function DashboardPage() {
           )}
 
           {active === "documents" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Documents</h1>
 
               {profile?.status === "matched" || profile?.status === "hired" ? (
@@ -802,7 +802,7 @@ export default function DashboardPage() {
                     2MB or less and be a JPEG or PDF.
                   </p>
 
-                  <div className="mt-6 divide-y divide-[#dde1ea] rounded-xl border border-[#dde1ea]">
+                  <div className="mt-6 divide-y divide-[#e3ddd0] rounded-xl border border-[#e3ddd0]">
                     {documentTypes.map((docType) => {
                       const doc = form.documents?.[docType.id];
                       const status = doc?.status || "not_started";
@@ -815,7 +815,7 @@ export default function DashboardPage() {
                               status === "uploaded" ? "text-green-600" : "text-[#8d95a3]"
                             }`}>
                               <span className={`h-1.5 w-1.5 rounded-full ${
-                                status === "uploaded" ? "bg-green-500" : "bg-[#dde1ea]"
+                                status === "uploaded" ? "bg-green-500" : "bg-[#e3ddd0]"
                               }`} />
                               {status === "uploaded" ? "Uploaded — pending review" : "Not started"}
                             </span>
@@ -844,7 +844,7 @@ export default function DashboardPage() {
                   </div>
                 </>
               ) : (
-                <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-[#dde1ea] bg-[#f7f8fb] py-12 text-center">
+                <div className="mt-6 flex flex-col items-center rounded-xl border border-dashed border-[#e3ddd0] bg-[#f8f5ef] py-12 text-center">
                   <svg className="h-10 w-10 text-[#8d95a3]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                   </svg>
@@ -858,14 +858,14 @@ export default function DashboardPage() {
           )}
 
           {active === "help" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Help & Information</h1>
               <p className="mt-2 text-sm text-[#5b6472]">Questions? Email us — details coming soon.</p>
             </div>
           )}
 
           {active === "settings" && (
-            <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+            <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
               <h1 className="font-display text-2xl font-semibold text-[#11203a]">Settings</h1>
               <p className="mt-2 text-sm text-[#5b6472]">Account settings coming soon.</p>
             </div>

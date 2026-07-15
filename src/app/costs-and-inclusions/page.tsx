@@ -60,7 +60,7 @@ export default function CostsAndInclusionsPage() {
       </section>
 
       {/* Three columns */}
-      <section className="bg-[#f7f8fb] py-16 sm:py-20">
+      <section className="bg-[#f8f5ef] py-16 sm:py-20">
         <Container className="grid gap-6 lg:grid-cols-3">
 
           {/* What's included */}
@@ -89,7 +89,7 @@ export default function CostsAndInclusionsPage() {
           </div>
 
           {/* Earn */}
-          <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
             <Wallet className="h-7 w-7 text-[#11203a]" strokeWidth={1.5} />
             <h2 className="mt-3 font-display text-2xl font-bold text-[#11203a]">
               Earn pocket money
@@ -97,7 +97,7 @@ export default function CostsAndInclusionsPage() {
             <p className="mt-4 text-sm leading-relaxed text-[#5b6472]">
               Most of your cost are covered, so this is just spending money per month for as much apres as desired ;)
             </p>
-            <ul className="mt-6 divide-y divide-[#dde1ea]">
+            <ul className="mt-6 divide-y divide-[#e3ddd0]">
               {earnings.map((e) => (
                 <li key={e.role} className="flex items-center justify-between py-3">
                   <span className="text-sm text-[#11203a]">{e.role}</span>
@@ -109,10 +109,10 @@ export default function CostsAndInclusionsPage() {
           </div>
 
           {/* Your costs */}
-          <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+          <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
             <DollarSign className="h-7 w-7 text-[#11203a]" strokeWidth={1.5} />
             <h2 className="mt-3 font-display text-2xl font-bold text-[#11203a]">Your costs</h2>
-            <ul className="mt-5 space-y-4 border-b border-[#dde1ea] pb-5">
+            <ul className="mt-5 space-y-4 border-b border-[#e3ddd0] pb-5">
               {costs.map((c) => (
                 <li key={c.label} className="flex items-center gap-3 text-sm text-[#11203a]">
                   <c.icon className="h-5 w-5 text-[#3fa9e0]" strokeWidth={1.5} />
@@ -124,7 +124,7 @@ export default function CostsAndInclusionsPage() {
               Additional costs may apply depending on your circumstances and destination.
             </p>
 
-            <div className="mt-8 border-t border-[#dde1ea] pt-6">
+            <div className="mt-8 border-t border-[#e3ddd0] pt-6">
               <MapPin className="h-6 w-6 text-[#11203a]" strokeWidth={1.5} />
               <h3 className="mt-2 font-display text-lg font-bold text-[#11203a]">No program fees</h3>
               <p className="mt-2 text-sm leading-relaxed text-[#5b6472]">

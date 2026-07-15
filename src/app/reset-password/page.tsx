@@ -31,7 +31,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f8fb] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f8f5ef] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
         <div className="text-center mb-8">
@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
           <p className="mt-2 text-sm text-[#5b6472]">Set a new password</p>
         </div>
 
-        <div className="rounded-2xl border border-[#dde1ea] bg-white p-8">
+        <div className="rounded-2xl border border-[#e3ddd0] bg-white p-8">
 
           {success ? (
             <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-600">
@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && handleUpdate()}
-                  className="w-full rounded-xl border border-[#dde1ea] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
+                  className="w-full rounded-xl border border-[#e3ddd0] px-4 py-3 text-sm text-[#11203a] placeholder:text-[#8d95a3] focus:border-[#3fa9e0] focus:outline-none focus:ring-2 focus:ring-[#3fa9e0]/20"
                 />
               </div>
 
