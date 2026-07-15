@@ -45,8 +45,7 @@ export default function Footer() {
         {/* Logo + description */}
         <div>
           <Link href="/" className="flex items-center gap-2 font-display text-xl font-semibold text-night">
-            <Mountain className="h-5 w-5 text-glacier" strokeWidth={2.5} aria-hidden="true" />
-            YourSkiSeason
+            <img src="/logo.png" alt="YourSkiSeason" className="h-10 w-auto brightness-0 invert" />
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-stone">
             We place students and young people  into real, paid ski-season

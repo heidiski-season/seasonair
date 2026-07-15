@@ -45,8 +45,7 @@ export default function Header() {
             href="/"
             className="flex items-center gap-2 font-display text-xl font-semibold text-night"
           >
-            <Mountain className="h-5 w-5 text-alpenglow" strokeWidth={2.5} aria-hidden="true" />
-            YourSkiSeason
+            <img src="/logo.png" alt="YourSkiSeason" className="h-10 w-auto" />
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
